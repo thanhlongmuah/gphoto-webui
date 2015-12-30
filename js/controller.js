@@ -90,9 +90,10 @@ function deleteFile(file){
 				success: function(data){
 					updateGalleryGrid(data);
 				},
-			});					
+			});
 		},
 	});
+alert(data);
 }
 
 function getCamera(){
