@@ -24,8 +24,11 @@ try{
 	switch($action){
 
 		case "takePicture":
-			exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\"",$output);
-			echo json_encode(true);					
+			exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
+
+			header('Content-Type: application/json');
+			$arr = array('output' => $output, 'rv' => $rv);
+			echo json_encode($arr);
 			break;
 	
 		case "deleteFile":
@@ -44,7 +47,7 @@ try{
 			header('Content-Length: '.filesize('images/'.$file));
 			$fp = fopen('images/'.$file, 'rb');
 			fpassthru($fp);
-			exit;
+			//exit;
 			break;
 		
 		
@@ -54,7 +57,6 @@ try{
 			$returnObj->camera = trim(explode("usb", $output[count($output) - 1])[0]);
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
-	
 			break;
 		
 		case "getImages":
@@ -63,17 +65,17 @@ try{
 			$imageDir = opendir('images');
 			while (($file = readdir($imageDir)) !== false) {			
 				if(!is_dir('images/'.$file)){
-					$path_parts = pathinfo('images/'.$file);				
+					$path_parts = pathinfo('images/'.$file);
 					if (!file_exists('images/thumbs/'.$path_parts['basename'].'.jpg')){
 						try { //try to extract the preview image from the RAW
 							CameraRaw::extractPreview('images/'.$file, 'images/thumbs/'.$path_parts['basename'].'.jpg');
 						} catch (Exception $e) { //else resize the image...
-							$im = new Imagick('images/'.$file);
-							$im->setImageFormat('jpg');
-							$im->scaleImage(1024,0);					
-							$im->writeImage('images/thumbs/'.$path_parts['basename'].'jpg');
-							$im->clear();
-							$im->destroy();
+							//$im = new Imagick('images/'.$file);
+							//$im->setImageFormat('jpg');
+							//$im->scaleImage(1024,0);					
+							//$im->writeImage('images/thumbs/'.$path_parts['basename'].'.jpg');
+							//$im->clear();
+							//$im->destroy();
 						}
 					}				
 					$returnFile;
