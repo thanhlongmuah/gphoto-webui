@@ -15,24 +15,24 @@ I’m using a RasPi model “B” (512 MB), but there’s no reason this wouldn�
 
 Also, the RasPi needs power, and it doesn’t have a battery. It requires a 5v 1000ma DC connection to work. This isn’t to hard to reproduce with off the shelf batteries and a little McGyvering. There’s also after-market battery packs for the RasPi too.
 
-Anyways, here’s how to make it work…
+Anyways, here's how to make it work:
 
 1.) Power up your Raspberry Pi. Pull up a Terminal, logon through SSH, or whatever you do to get to a console.
 
 2.) Update your Raspberry Pi
 
-sudo apt-get update
-sudo apt-get upgrade
+    sudo apt-get update
+    sudo apt-get upgrade
 
 Note: the "upgrade" command always seems to screw up my system, so you may want to skip that step, at least until Raspian upgrades itself properly without imploding.
 
 3.) Install the following packages.
 
-sudo apt-get install imagemagick php5 php5-cli php5-imagick gphoto2 zip unzip exiv2
+    sudo apt-get install imagemagick php5 php5-cli php5-imagick php5-json gphoto2 zip unzip exiv2
 
 Note: You do not need a web server. In fact, I wouldn’t recommend it for this little app because this app will need more elevated permissions than the www-data user has. Configuring the server to run a user with elevated permissions might work, but not necessary. PHP has a built in development server that will work just fine and also run as the logged on user. 
 
-DON'T RUN THIS ON THE PUBLIC INTERNET. THIS IS NOT INTENDED FOR THAT, NOR IS IT SECURE! 
+> DON'T RUN THIS ON THE PUBLIC INTERNET. THIS IS NOT INTENDED FOR THAT, NOR IS IT SECURE! 
 
 Note: If you have trouble getting gphoto2 working with your camera, try installing it from scratch.
 http://whysohardtoget.blogspot.com/2013/05/compiling-gphoto2-252-with-raspberry-pi.html

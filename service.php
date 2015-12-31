@@ -30,17 +30,17 @@ try{
 			$arr = array('output' => $output, 'rv' => $rv);
 			echo json_encode($arr);
 			break;
-	
+
 		case "deleteFile":
 			$file = $_GET['file'];
 			$path_parts = pathinfo('images/'.$file);
-			unlink('images/'.$file);				
-			unlink('images/thumbs/'.$path_parts['basename'].'.jpg');				
+			unlink('images/'.$file);
+			unlink('images/thumbs/'.$path_parts['basename'].'.jpg');
 			header('Content-Type: application/json');
-			echo json_encode(true);					
+			echo json_encode(true);
 			break;
-			
-		case "getImage":	
+
+		case "getImage":
 			$file = $_GET['file'];
 			header('Content-Type: application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.$file.'"');
@@ -49,21 +49,22 @@ try{
 			fpassthru($fp);
 			//exit;
 			break;
-		
-		
-		case "getCamera":
 
+		case "getCamera":
 			exec ("gphoto2 --auto-detect", $output);
+			$returnObj = new stdClass();
 			$returnObj->camera = trim(explode("usb", $output[count($output) - 1])[0]);
+
 			header('Content-Type: application/json');
+//echo explode("usb", $output[count($output)-1])[0];
 			echo json_encode($returnObj);
+//echo var_dump($returnObj);
 			break;
-		
+
 		case "getImages":
-	
 			$files = array();
 			$imageDir = opendir('images');
-			while (($file = readdir($imageDir)) !== false) {			
+			while (($file = readdir($imageDir)) !== false) {
 				if(!is_dir('images/'.$file)){
 					$path_parts = pathinfo('images/'.$file);
 					if (!file_exists('images/thumbs/'.$path_parts['basename'].'.jpg')){
@@ -72,7 +73,7 @@ try{
 						} catch (Exception $e) { //else resize the image...
 							//$im = new Imagick('images/'.$file);
 							//$im->setImageFormat('jpg');
-							//$im->scaleImage(1024,0);					
+							//$im->scaleImage(1024,0);
 							//$im->writeImage('images/thumbs/'.$path_parts['basename'].'.jpg');
 							//$im->clear();
 							//$im->destroy();
