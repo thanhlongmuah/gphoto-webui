@@ -55,31 +55,6 @@ $(document).on( "pageshow","#cameraGallery", function( event ) {
 })
 
 
-
-
-
-
-
-
-
-
-$(document).ready( function() {
-	$.ajax({
-		url: "service.php",
-		dataType: "json",
-		success: function (data) {
-			getCurrentCameraSettings(data);
-		}
-	});
-});
-
-
-function getCurrentCameraSettings() {
-	
-}
-
-
-
 function updateGalleryGrid(data){
 	//$("#galleryGrid").html("");
 	

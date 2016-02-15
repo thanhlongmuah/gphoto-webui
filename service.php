@@ -1,6 +1,6 @@
 <?php
 require_once("CameraRaw.php");
-
+require_once("gPhoto.php");
 
 
 //time gphoto2 --quiet --capture-image-and-download --filename "./images/capture-%Y%m%d-%H%M%S-%03n.%C"
@@ -18,17 +18,26 @@ if (isset($_GET['action'])){
 }
 
 
-$returnObj;
+
+$returnObj = new stdClass();	// set the object to avoid the php warning
 
 try{
 	switch($action){
-
 		case "takePicture":
 			exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
+			foreach ($output as $line) {
+				$line = " " . $line;	// add a space at the beginning so strpos can search correctly
+				if (strpos($line, 'Saving') !== false) {
+					// string found
+					$returnObj->filename = trim(explode("as", $line)[1]);
+					$returnObj->message = "Photo successfully taken and stored: '" . $returnObj->filename . "'";
+					break 1;
+				}
+			}
 
 			header('Content-Type: application/json');
-			$arr = array('output' => $output, 'rv' => $rv);
-			echo json_encode($arr);
+			$returnObj->rv = $rv;
+			echo json_encode($returnObj);
 			break;
 
 		case "deleteFile":
@@ -52,13 +61,18 @@ try{
 
 		case "getCamera":
 			exec ("gphoto2 --auto-detect", $output);
-			$returnObj = new stdClass();
+			//var_dump($output);	//debug
 			$returnObj->camera = trim(explode("usb", $output[count($output) - 1])[0]);
+			if (strpos(" " . $returnObj->camera, '-------------------------') !== false) {
+				$returnObj->rv = false;
+				$returnObj->camera = "-- no camera detected --";
+				$returnObj->error = "Camera not detected.";
+			} else {
+				$returnObj->rv = true;
+			}
 
 			header('Content-Type: application/json');
-//echo explode("usb", $output[count($output)-1])[0];
 			echo json_encode($returnObj);
-//echo var_dump($returnObj);
 			break;
 
 		case "getImages":
@@ -78,14 +92,14 @@ try{
 							//$im->clear();
 							//$im->destroy();
 						}
-					}				
+					}
 					$returnFile;
 					$returnFile->name = $path_parts['basename'];
 					$returnFile->sourcePath = 'images/'.$file;
 					$returnFile->thumbPath = 'images/thumbs/'.$path_parts['basename'].'.jpg';
-				
+
 					array_push($files,$returnFile);
-				
+
 					unset($returnFile);
 				}
 			}
@@ -94,11 +108,107 @@ try{
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
 			break;
+
+		case "getCameraImages":
+			exec ("gphoto2 --list-files 2>&1", $output, $rv);
+
+			if (preg_match('/Error/', $output[0])) {	// check for Error
+				$returnObj->error = trim(str_replace('*', '', $output[0]));
+			} else {	// No Error
+				$returnObj->files = array();
+				$currentdir = "";
+				foreach ($output as $line) {
+					$line = preg_replace('!\s+!', ' ', $line);      // replace multiple spaces with just one
+
+					if (preg_match("/^There are \d+ files in folder/", $line)) {
+						$arr = explode("'", $line);
+						$currentdir = $arr[1] . "/"; // directory path
+						//$filecount = explode(" ", $arr[0])[2];       // number of files in the directory
+					}
+					// Example:
+					// '#10    IMG_8017.CR2               rd 21601 KB image/x-canon-cr2'
+					elseif (preg_match("/^#\d+ \w+\.\w+ /", $line)) {
+						//$filecount = intval($filecount);
+						$arr = explode(" ", $line);
+						$obj = new stdClass();
+						$obj->dir		= $currentdir;
+						$obj->num		= $arr[0];
+						$obj->filename		= $arr[1];
+						$obj->permissions	= $arr[2];
+						$obj->filesize		= $arr[3];
+						$obj->filesizeunit	= $arr[4];
+						$obj->filetype		= $arr[5];
+						array_push($returnObj->files, $obj);
+					}
+				}
+			}
+
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
+
+		case "getCurrentCameraSettings":
+			$returnObj = getCameraSettings(false);
+
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
+		case "getCameraSettings":
+			$returnObj = getCameraSettings(true);
+
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
 		default:
 			break;
 	}
 } catch (Exception $e) { //else resize the image...
-	
+	//echo $e;
+	var_dump($e);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+// FUNCTIONS
+//
+
+function getCameraSettings($includeOptions = true) {
+	$returnObj = new stdClass();
+	$gphoto = new gPhoto();
+
+	$iso		= $gphoto->getISO();
+	$aperture	= $gphoto->getAperture();
+	$shutter	= $gphoto->getShutterSpeed();
+
+	$returnObj->settings = array ();		// need to set the array object first
+	$returnObj->returnStatus = false;
+
+	if ($includeOptions) {
+		if ($iso->returnStatus) {
+			array_push($returnObj->settings,
+					$iso,
+					$aperture,
+					$shutter
+			);
+			$returnObj->returnStatus = true;
+		}
+	} else {
+		array_push($returnObj->settings,
+				justCurrent($iso),
+				justCurrent($aperture),
+				justCurrent($shutter)
+		);
+	}
+	return $returnObj;
+}
+
+
+function justCurrent($data) {
+	return array(
+		"label" => $data->label,
+		"current" => $data->current
+	);
+}
+
 
 ?>
