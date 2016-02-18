@@ -1,117 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<title>Camera Remote</title>
 
-<meta http-equiv="cache-control" content="max-age=0" />
-<meta http-equiv="cache-control" content="no-cache" />
-<meta http-equiv="expires" content="0" />
-<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-<meta http-equiv="pragma" content="no-cache" />
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Camera Remote</title>
+	<!-- CSS -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" type="text/css" />
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="css/simple-sidebar.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/jquery.mobile-1.4.2.css" />
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <!-- script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"  /script -->
-        <!-- script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"  /script -->
-    <![endif]-->
-
-    <!-- jQuery -->
-    <script src="js/jquery-1.12.0.js"></script>
-    <script src="js/jquery.mobile-1.4.5.js"></script>
-    <script src="js/index.js"></script>
+	<!-- jQuery -->
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/jquery.mobile-1.4.5.js"></script>
+	<script src="js/index.js"></script>
 
 </head>
 <body>
 
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-		<li class="sidebar-brand">
-			<a href="#" class="">
-				Menu
-			</a>
-		</li>
-		<li>
-			<a href="index.html">Take Picture</a>
-		</li>
-		<li>
-			<a href="photos.html">Photos</a>
-		</li>
-            </ul>
-        </div>
-<a href="index.html">PHOTOS</a>
-        <!-- /#sidebar-wrapper -->
+<!-- Start of first page -->
+<div data-role="page" id="page-one">
+	<script type="text/html" id="alertHTML">
+		<div class='alert alert-info flash'>
+			<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+			<strong>Info!</strong>
+			@message
+		</div>
+	</script>
+	<div data-role="header">
+		<h2 id="cameraName1">Loading camera...</h2>
+		<div data-role="navbar" data-iconpos="left">
+			<ul>
+				<li><a href="#page-one" data-icon="camera" class="ui-btn-active ui-state-persist">Take Picture</a></li>
+				<li><a href="#page-two" data-icon="grid">View Photos</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="alertContainer" class="row">
+		<div class="alert alert-info flash">
+			<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+			<strong>Info:</strong>
+			Loading current camera settings...
+		</div>
+	</div>
+	<!-- /#alert-message -->
 
 	<!-- Page Content -->
-	<div id="page-content-wrapper">
-		<div class="row">
-			<div class="col-xs-5">
-				<a href="#menu-toggle" class="btn btn-default btn-lg glyphicon glyphicon-menu-hamburger" id="menu-toggle"></a>
-			</div>
-			<div class="col-xs-7" id="cameraName">Loading camera...</div>
-		</div>
-		<script type="text/html" id="alertHTML">
-			<div class='alert alert-info flash'>
-				<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<strong>Info!</strong>
-				@message
-			</div>
-		</script>
-		<div id="alertContainer" class="">
-			<div class="alert alert-info flash">
-				<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<strong>Info:</strong>
-				Loading current camera settings...
-			</div>
-		</div>
-		<!-- /#alert-message -->
+	<div data-role="main" class="ui-content" style="text-align:center">
+		<h1>Take Picture</h1>
+		<button onclick="takePicture()" id="snap">
+			<img src="img/aperture.png" class="img">
+		</button>
 
-
-		<div class="row" role="main" class="ui-content" style="text-align:center">
-			<h1>Take Picture</h1>
-			<button onclick="takePicture()" id="snap">
-				<img src="img/aperture.png" class="img">
-			</button>
-		</div>
+		<!-- Start camera settings  -->
+		<h3>Camera Settings</h3>
 		<div class="container-fluid">
-			<div class="row">
-				<div class="col-lg-12">
-					<h2>Current Settings</h2>
-					<script type="text/html" id="settingsHTML">
-						<form>
-							<label for="@settingName"> @labelName </label>
-							<select name="@settingName" id="@settingName" data-native-menu='false' onchange="settingChange()"> @settingLineItems </select>
-						</form>
-					</script>
-					<script type="text/html" id="settingLineItemHTML">
-						<option value="@index" @selected> @value </option>
-					</script>
+			<!-- div class="ui-grid-solo" -->
+				<script type="text/html" id="settingsHTML">
+					<fieldset class="ui-field-contain">
+					<label for="@settingName"> @labelName </label>
+						<select name="@settingName" id="@settingName" onchange="settingChangeClick()">
+							@settingLineItems
+						</select>
+					</fieldset>
+				</script>
+				<script type="text/html" id="settingLineItemHTML">
+					<option value="@index" @selected> @value </option>
+				</script>
+				<form method="post" action="#save">
+					<div id="settingsContainer">Loading camera settings...</div>
+					<!-- input type="submit" data-inline="true" value="Submit" -->
+				</form>
+		</div>
+		<!-- End camera settings -->
+	</div>
+</div>
+<!-- /#page-take-picture -->
 
-					<div id="settingsContainer"></div>
-				</div>
+
+
+<!-- Page Content -->
+<div data-role="page" id="page-two">
+	<div data-role="header">
+		<h2 id="cameraName2"></h2>
+		<div data-role="navbar" data-iconpos="left">
+			<ul>
+				<li><a href="#page-one" data-icon="camera">Take Picture</a></li>
+				<li><a href="#page-two" data-icon="grid" class="ui-btn-active ui-state-persist">View Photos</a></li>
+			</ul>
+		</div>
+	</div>
+	<script type="text/html" id="galleryRow">
+		<div class="row">
+			@columns
+		</div>
+	</script>
+	<script type="text/html" id="galleryCol">
+		<div class="col-sm-4">
+			<p>
+				<img src="@urlThumb" class="thumbnail" style="150px;height=150px" />
+			</p>
+			<p>
+				<a href="@url" class="thumbnail">Download</a>
+			</p>
+		</div>
+	</script>
+	<div data-role="main" class="container-fluid">
+		<div class="row">
+			<div class="col-lg-12">
+				<script type="text/html" id="settingsHTML">
+					<form>
+						<label for="@settingName"> @labelName </label>
+						<select name="@settingName" id="@settingName" data-native-menu='false' onchange="settingChange()"> @settingLineItems </select>
+					</form>
+				</script>
+				<script type="text/html" id="settingLineItemHTML">
+					<option value="@index" @selected> @value </option>
+				</script>
+				<div id="settingsContainer"></div>
 			</div>
 		</div>
 	</div>
-	<!-- /#page-content-wrapper -->
+</div>
+<!-- /#page-content-wrapper -->
 
-    </div>
-    <!-- /#wrapper -->
+
+
 
     <!-- Menu Toggle Script -->
     <script>
@@ -122,5 +139,4 @@
     </script>
 
 </body>
-
 </html>

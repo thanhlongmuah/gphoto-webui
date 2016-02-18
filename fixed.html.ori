@@ -1,25 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<script src="js/jquery-1.12.0.js"></script>
+	<!-- script src="js/jquery.mobile-1.4.5.js"></script -->
 
-    <title>Photos</title>
+	<title>Camera Remote</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- Custom CSS -->
-    <link href="css/simple-sidebar.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" type="text/css" />
 
-    <!-- jQuery -->
-    <script src="js/jquery-2.1.4.min.js"></script>
-    <script src="js/jquery.mobile-1.4.5.js"></script>
-    <script src="js/photos.js"></script>
+	<script>
+		console.log("Loading...");
+
+		$( document ).ready(function() {
+			
+		});
+
+	</script>
+
+
 
 </head>
 <body>
@@ -40,11 +42,12 @@
 		<li>
 			<a href="photos.html">Photos</a>
 		</li>
-<li>
-<a href="test.html">TEST</a>
-</li>
+		<li>
+			<a href="test.html">TEST</a>
+		</li>
             </ul>
         </div>
+<a href="photos.html">PHOTOS</a>
         <!-- /#sidebar-wrapper -->
 
 	<!-- Page Content -->
@@ -66,35 +69,22 @@
 			<div class="alert alert-info flash">
 				<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
 				<strong>Info:</strong>
-				Loading camera photos...
+				Loading current camera settings...
 			</div>
 		</div>
 		<!-- /#alert-message -->
 
 
 		<div class="row" role="main" class="ui-content" style="text-align:center">
-			<h1>Photos</h1>
+			<h1>Take Picture</h1>
+			<button onclick="takePicture()" id="snap">
+				<img src="img/aperture.png" class="img">
+			</button>
 		</div>
-
-		<script type="text/html" id="galleryRow">
-			<div class="row">
-				@columns
-			</div>
-		</script>
-		<script type="text/html" id="galleryCol">
-			<div class="col-sm-4">
-				<p>
-					<img src="@urlThumb" class="thumbnail" style="150px;height=150px" />
-				</p>
-				<p>
-					<a href="@url" class="thumbnail">Download</a>
-				</p>
-			</div>
-		</script>
-
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-lg-12">
+					<h2>Current Settings</h2>
 					<script type="text/html" id="settingsHTML">
 						<form>
 							<label for="@settingName"> @labelName </label>
@@ -114,7 +104,6 @@
 
     </div>
     <!-- /#wrapper -->
-
 
     <!-- Menu Toggle Script -->
     <script>

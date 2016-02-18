@@ -6,12 +6,18 @@ window.setTimeout(function() {
 }, 5000);
 
 
-$(document).ready ( function() {
+$(document).ready( readyFn );
 
+function readyFn() {
 	console.log("JS Loaded...");
 
-	setAlert("Loading camera settings...");
+	loadCameraName();
+	loadCameraSettings();
+}
 
+
+function loadCameraSettings() {
+	setAlert("Loading camera settings...");
 	$.ajax({
 		url: "service.php?action=getCameraSettings",
 		dataType: "json",
@@ -20,13 +26,15 @@ $(document).ready ( function() {
 			getCameraSettings(data);
 		}
 	});
+}
 
 
+function loadCameraName() {
 	$.ajax({
 		url: "service.php?action=getCamera",
 		dataType: "json",
 		success: function (data) {
-	console.log("Camera Name...");
+console.log("Camera Name...");
 			getCamera(data);
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -35,11 +43,23 @@ $(document).ready ( function() {
 			console.log(thrownError);
 		}
 	});
-});
+}
+
+
+function loadPhotos() {
+
+}
+
+
+$(document).on( "pageshow","#photos", loadPhotos);
+
+$(document).on( "pageshow","#take-picture", loadPage);
+
 
 
 function getCamera (data) {
-	$("#cameraName").text(data.camera);
+	$("#cameraName1").text(data.camera);
+	$("#cameraName2").text(data.camera);
 }
 
 
@@ -68,9 +88,15 @@ function getCameraSettings(data){
 		}
 		html = html.replace(/@settingLineItems/g, lineItems);
 
-		$("#settingsContainer").append(html);
+		if (i == 0) {
+			$("#settingsContainer").html( html );
+		} else {
+			$("#settingsContainer").append( html );
+		}
 	}
 
+	// Enable CSS
+	$("#settingsContainer").enhanceWithin();
 	clearAlert();
 }
 
@@ -92,7 +118,7 @@ function clearAlert () {
 }
 
 
-function settingChange () {
+function settingChangeClick () {
 	//console.log(this);
 	
 }
