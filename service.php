@@ -112,15 +112,19 @@ try{
 			echo json_encode($returnObj);
 			break;
 
-		case "getCameraImages":
-			$pageNum = $_GET['page'];
+		case "getCameraFiles":
+			$thumbsDir   = "images/thumbs/";
+
+			$pageNum     = $_GET['page'];
 			$countOnPage = $_GET['count'];
 
 			$returnObj = new stdClass();
 			$gphoto = new gPhoto();
 
-			chdir("images/thumbs/");
-			$returnObj = $gphoto->getCameraImages($pageNum, $countOnPage);
+
+			chdir ($thumbsDir);
+			$returnObj = $gphoto->getCameraFiles($pageNum, $countOnPage);
+			$returnObj->thumbsDir = $thumbsDir;
 
 			header('Content-Type: application/json');
 			echo json_encode ($returnObj);

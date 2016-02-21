@@ -158,7 +158,7 @@ public function getShutterSpeed () {
 }
 
 
-public function getCameraImages ($pageNum, $countOnPage) {
+public function getCameraFiles ($pageNum, $countOnPage) {
 
 	// first, confirm variables are numbers
 	if ( ! is_numeric($pageNum) && ! is_numeric($countOnPage) && $pageNum > 1000 && $countOnPage > 1000000 && $pageNum < 1 && $countOnPage < 5) {

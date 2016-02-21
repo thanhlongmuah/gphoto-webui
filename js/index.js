@@ -60,56 +60,17 @@ function loadPhotos(page) {
 			// set global variable
 			CAMERAFILES = data.files;
 
-			//displayCameraFiles (page);
+			displayCameraFiles( 1 );
 
 
-			console.log(CAMERAFILES);
+			//console.log(CAMERAFILES);
 			//$("#photosContainer").append("<img src='/images/thumbs/thumb_" + files[0].filename + ".jpg'>");
 
-			start = ((page - 1) * PHOTOSPERPAGE) + 1;
-			end   = start + PHOTOSPERPAGE;
-
+			//start = ((page - 1) * PHOTOSPERPAGE) + 1;
+			//end   = start + PHOTOSPERPAGE;
 			//console.log(start);
 			//console.log(end);
 
-			for (i = start; i < end; i++) {
-				image = CAMERAFILES[i].filename;
-				console.log(i);
-				console.log(image);
-
-				// add each image
-			}
-
-
-			/////////////////////////////////////////////////////////////////////
-			// PhotoSwipe
-			var pswpElement = document.querySelectorAll('.pswp')[0];
-
-			// build items array
-			var items = [
-				{
-					src: "/images/thumbs/thumb_" + CAMERAFILES[0].filename + ".jpg",
-					w: 600,
-					h: 400
-				},
-				{
-					src: "/images/thumbs/thumb_" + CAMERAFILES[1].filename + ".jpg",
-					w: 1200,
-					h: 900
-				}
-			];
-
-			// define options (if needed)
-			var options = {
-				// optionName: 'option value'
-				// for example:
-				index: 0 // start at first slide
-			};
-
-			// Initializes and opens PhotoSwipe
-			//var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
-			var gallery = new PhotoSwipe( pswpElement, false, items, options);
-			gallery.init();
 
 
 		},
@@ -122,6 +83,62 @@ function loadPhotos(page) {
 }
 
 function displayCameraFiles (page) {
+	$.ajax({
+		url: "service.php?action=getCameraFiles&page=" + page + "&count=" + PHOTOSPERPAGE,
+		dataType: "json",
+		success: function (data) {
+
+			//console.log(data);
+
+			var items = new Array();
+			for (i = 0; i < data.filenames.length; i++) {
+				// add each image
+				items[i]	= new Array();
+				items[i]['src']	= data.thumbsDir + data.filenames[i].name;
+				items[i]['w']	= 100;
+				items[i]['h']	= 100;
+			}
+
+			//console.log(items);
+
+			/////////////////////////////////////////////////////////////////////
+			// PhotoSwipe
+			var pswpElement = document.querySelectorAll('.pswp')[0];
+
+			// build items array
+/*			var items = [
+				{
+					src: "/images/thumbs/thumb_" + CAMERAFILES[0].filename + ".jpg",
+					w: 100,
+					h: 100
+				},
+				{
+					src: "/images/thumbs/thumb_" + CAMERAFILES[1].filename + ".jpg",
+					w: 100,
+					h: 100
+				}
+			];
+*/
+
+			// define options (if needed)
+			var options = {
+				// optionName: 'option value'
+				// for example:
+				//index: 0 // start at first slide
+			};
+
+			// Initializes and opens PhotoSwipe
+			var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+			//var gallery = new PhotoSwipe( pswpElement, false, items, options);
+			gallery.init();
+
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
 }
 
 
