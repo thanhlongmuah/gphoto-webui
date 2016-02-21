@@ -24,7 +24,10 @@ $returnObj = new stdClass();	// set the object to avoid the php warning
 try{
 	switch($action){
 		case "takePicture":
+			// take picture and copy it to the RPi
 			exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
+			// instead of taking the picture and downloading it, let's just get the thumbnail
+			//exec ("gphoto2 --capture-image", output, $rv);
 			foreach ($output as $line) {
 				$line = " " . $line;	// add a space at the beginning so strpos can search correctly
 				if (strpos($line, 'Saving') !== false) {
@@ -110,7 +113,22 @@ try{
 			break;
 
 		case "getCameraImages":
-			exec ("gphoto2 --list-files 2>&1", $output, $rv);
+			$pageNum = $_GET['page'];
+			$countOnPage = $_GET['count'];
+
+			$returnObj = new stdClass();
+			$gphoto = new gPhoto();
+
+			chdir("images/thumbs/");
+			$returnObj = $gphoto->getCameraImages($pageNum, $countOnPage);
+
+			header('Content-Type: application/json');
+			echo json_encode ($returnObj);
+			break;
+
+
+
+			//exec ("gphoto2 --list-files 2>&1", $output, $rv);
 
 			if (preg_match('/Error/', $output[0])) {	// check for Error
 				$returnObj->error = trim(str_replace('*', '', $output[0]));
@@ -145,6 +163,17 @@ try{
 
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
+			break;
+
+		case "getListOfCameraFiles":
+			$returnObj = new stdClass();
+			$gphoto = new gPhoto();
+
+			$returnObj = $gphoto->getListOfFiles();
+
+			header('Content-Type: application/json');
+			echo json_encode ($returnObj);
+			break;
 			break;
 
 		case "getCurrentCameraSettings":

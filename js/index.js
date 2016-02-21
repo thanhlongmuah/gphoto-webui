@@ -1,4 +1,8 @@
 
+// Global variables
+var CAMERAFILES;
+var PHOTOSPERPAGE = 20;
+
 window.setTimeout(function() {
 	$(".flash").fadeTo(500, 0).slideUp(500, function(){
 		$(this).remove();
@@ -6,13 +10,14 @@ window.setTimeout(function() {
 }, 5000);
 
 
-$(document).ready( readyFn );
+$(document).ready( loadTakePicture );
 
-function readyFn() {
+function loadTakePicture() {
 	console.log("JS Loaded...");
 
 	loadCameraName();
 	loadCameraSettings();
+	loadPhotos(1);
 }
 
 
@@ -34,7 +39,6 @@ function loadCameraName() {
 		url: "service.php?action=getCamera",
 		dataType: "json",
 		success: function (data) {
-console.log("Camera Name...");
 			getCamera(data);
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -46,14 +50,84 @@ console.log("Camera Name...");
 }
 
 
-function loadPhotos() {
+function loadPhotos(page) {
+	console.log("Loading camera files...");
+	$.ajax({
+		url: "service.php?action=getListOfCameraFiles",
+		dataType: "json",
+		success: function (data) {
 
+			// set global variable
+			CAMERAFILES = data.files;
+
+			//displayCameraFiles (page);
+
+
+			console.log(CAMERAFILES);
+			//$("#photosContainer").append("<img src='/images/thumbs/thumb_" + files[0].filename + ".jpg'>");
+
+			start = ((page - 1) * PHOTOSPERPAGE) + 1;
+			end   = start + PHOTOSPERPAGE;
+
+			//console.log(start);
+			//console.log(end);
+
+			for (i = start; i < end; i++) {
+				image = CAMERAFILES[i].filename;
+				console.log(i);
+				console.log(image);
+
+				// add each image
+			}
+
+
+			/////////////////////////////////////////////////////////////////////
+			// PhotoSwipe
+			var pswpElement = document.querySelectorAll('.pswp')[0];
+
+			// build items array
+			var items = [
+				{
+					src: "/images/thumbs/thumb_" + CAMERAFILES[0].filename + ".jpg",
+					w: 600,
+					h: 400
+				},
+				{
+					src: "/images/thumbs/thumb_" + CAMERAFILES[1].filename + ".jpg",
+					w: 1200,
+					h: 900
+				}
+			];
+
+			// define options (if needed)
+			var options = {
+				// optionName: 'option value'
+				// for example:
+				index: 0 // start at first slide
+			};
+
+			// Initializes and opens PhotoSwipe
+			//var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+			var gallery = new PhotoSwipe( pswpElement, false, items, options);
+			gallery.init();
+
+
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
+}
+
+function displayCameraFiles (page) {
 }
 
 
 $(document).on( "pageshow","#photos", loadPhotos);
 
-$(document).on( "pageshow","#take-picture", loadPage);
+$(document).on( "pageshow","#take-picture", loadTakePicture);
 
 
 
@@ -144,29 +218,32 @@ function updateCameraGalleryGrid(data){
 }
 
 
-function takePicture(){
+function displayLoading(myText) {
         $.mobile.loading( 'show', {
-                text: 'Taking Image....',
+                text: myText,
                 textVisible: true,
                 theme: 'a'
         });
+}
+function hideLoading() {
+	$.mobile.loading('hide');
+}
 
+
+function takePicture(){
+
+	displayLoading("Taking Image...");
 
         $.ajax({
                 url: "service.php?action=takePicture",
                 dataType : "json",
                 success: function(data){
-                        //$.mobile.loading('hide');
+			hideLoading()
 
                         // show successful message
-                        $.mobile.loading( 'show', {
-                                text: data.message,
-                                textVisible: true,
-                                theme: 'a'
-                        });
+			//displayLoading(data.message);
+console.log(data);
 
-                        //delay not working yet..
-                        //$.mobile.delay(100).loading('hide');
                 },
         });
 }
