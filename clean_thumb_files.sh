@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -rf ./images/thumbs/thumb_*
+rm -rf ./thumbs/*

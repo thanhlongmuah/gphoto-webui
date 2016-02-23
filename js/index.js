@@ -1,7 +1,6 @@
-
 // Global variables
 var CAMERAFILES;
-var PHOTOSPERPAGE = 20;
+var PHOTOSPERPAGE = 30;
 
 window.setTimeout(function() {
 	$(".flash").fadeTo(500, 0).slideUp(500, function(){
@@ -59,19 +58,8 @@ function loadPhotos(page) {
 
 			// set global variable
 			CAMERAFILES = data.files;
-
+//console.log(data);
 			displayCameraFiles( 1 );
-
-
-			//console.log(CAMERAFILES);
-			//$("#photosContainer").append("<img src='/images/thumbs/thumb_" + files[0].filename + ".jpg'>");
-
-			//start = ((page - 1) * PHOTOSPERPAGE) + 1;
-			//end   = start + PHOTOSPERPAGE;
-			//console.log(start);
-			//console.log(end);
-
-
 
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -90,47 +78,27 @@ function displayCameraFiles (page) {
 
 			//console.log(data);
 
+			// Add each photo to the array, and the page
 			var items = new Array();
+			var thumbsDir = data.thumbsDir
+			var html = "";
 			for (i = 0; i < data.filenames.length; i++) {
-				// add each image
-				items[i]	= new Array();
-				items[i]['src']	= data.thumbsDir + data.filenames[i].name;
-				items[i]['w']	= 100;
-				items[i]['h']	= 100;
-			}
+				var thumb     = data.filenames[i];
+				var fullImage = "";
 
+				// add photo to page
+				$("#cameraThumbsContainer");
+				html = $("#cameraThumbsHTML").text();
+				html = html.replace(/@thumbURL/g, thumbsDir + thumb.name);
+				html = html.replace(/@imageURL/g, "/service.php?downloadImage=" + thumb.num);
+				html = html.replace(/@imageLabel/g, CAMERAFILES[thumb.num].filename);
+				html = html.replace(/@imageAlt/g, CAMERAFILES[thumb.num].filename);
+				$("#cameraThumbsContainer").append( html );
+			}
 			//console.log(items);
 
-			/////////////////////////////////////////////////////////////////////
-			// PhotoSwipe
-			var pswpElement = document.querySelectorAll('.pswp')[0];
-
-			// build items array
-/*			var items = [
-				{
-					src: "/images/thumbs/thumb_" + CAMERAFILES[0].filename + ".jpg",
-					w: 100,
-					h: 100
-				},
-				{
-					src: "/images/thumbs/thumb_" + CAMERAFILES[1].filename + ".jpg",
-					w: 100,
-					h: 100
-				}
-			];
-*/
-
-			// define options (if needed)
-			var options = {
-				// optionName: 'option value'
-				// for example:
-				//index: 0 // start at first slide
-			};
-
-			// Initializes and opens PhotoSwipe
-			var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
-			//var gallery = new PhotoSwipe( pswpElement, false, items, options);
-			gallery.init();
+			// Enable CSS
+			$("#settingsContainer").enhanceWithin();
 
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -202,10 +170,12 @@ function setAlert (msg) {
 		$("#alertMessage").alert('close');
 	});*/
 
-	$("alertContainer").html(html);
+	$("alertContainer1").html(html);
+	$("alertContainer2").html(html);
 }
 function clearAlert () {
-	$("#alertContainer").html("");
+	$("#alertContainer1").html("");
+	$("#alertContainer2").html("");
 }
 
 
