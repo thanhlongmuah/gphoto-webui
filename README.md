@@ -1,9 +1,15 @@
 gphoto-webui
 ============
 
-This started out as an extension of the original gphoto-webui project, but it has become much more, including a rewrite.
-The original project can be found here:
-https://github.com/theonemule/gphoto-webui
+My goal is to create a decent web interface through the rPi and be able to control my DSLR. I would have thought something like this already existed, but I couldn't find one with all the capabilities I was looking for.
+
+Features:
+* Change settings, such as ISO, Shutter Speed and Aperture
+* Take picture
+* View photos on the camera
+* Download the original file to the phone
+* Download a converted JPEG to the phone (from RAW)
+* Timelapse settings (later)
 
 
 <img src="/screenshots/screen1.png" width="200" height="400" />
@@ -42,3 +48,8 @@ cd gphoto-webui/bin; ./gphoto-webui.sh
 5. Point your browser to http://x.x.x.x:8000/  (x.x.x.x is the IP if your Raspberry Pi)
 
 Enjoy!
+
+
+This started out as an extension of the original gphoto-webui project, but it has become much more, including a rewrite.
+The original project can be found here:
+https://github.com/theonemule/gphoto-webui
