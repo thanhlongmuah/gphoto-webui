@@ -1,7 +1,7 @@
 gphoto-webui
 ============
 
-This is a duplicate and extension of the original gphoto-webui project.
+This started out as an extension of the original gphoto-webui project, but it has become much more, including a rewrite.
 The original project can be found here:
 https://github.com/theonemule/gphoto-webui
 
