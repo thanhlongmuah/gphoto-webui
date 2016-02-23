@@ -6,7 +6,7 @@ The original project can be found here:
 https://github.com/theonemule/gphoto-webui
 
 
-<img src="/screenshots/screen1.png" width="100" height="300" />
+<img src="/screenshots/screen1.png" width="200" height="400" />
 
 
 1.) Power up your Raspberry Pi. Pull up a Terminal, logon through SSH, or whatever you do to get to a console.
