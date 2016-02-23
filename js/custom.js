@@ -2,6 +2,37 @@
 var CAMERAFILES;
 var PHOTOSPERPAGE = 30;
 
+
+function setPage1Alert (msg) {
+	setAlertOnPage ("#alertContainer1", msg);
+}
+function setPage2Alert (msg) {
+	setAlertOnPage ("#alertContainer2", msg);
+}
+function setAlertOnPage (container, msg) {
+	html = $("#alertHTML").text();
+	html = html.replace(/@link/g, "#");
+	html = html.replace(/@message/g, msg);
+
+/*	$("#alertMessage").fadeOut(2000,500).slideUp(500, function() {
+		$("#alertMessage").alert('close');
+	});*/
+
+	$( container ).html( html );
+}
+function clearPage1Alert () {
+	clearAlertOnPage ("#alertContainer1");
+}
+function clearPage2Alert () {
+	clearAlertOnPage ("#alertContainer2");
+}
+function clearAlertOnPage ( container ) {
+	$( container ).html("");
+}
+
+
+
+
 window.setTimeout(function() {
 	$(".flash").fadeTo(500, 0).slideUp(500, function(){
 		$(this).remove();
@@ -9,36 +40,36 @@ window.setTimeout(function() {
 }, 5000);
 
 
+
 $(document).ready( loadTakePicture );
 
-function loadTakePicture() {
-	console.log("JS Loaded...");
+//$(document).on( "pageshow","#page1", loadPhotos);
+//$(document).on( "pageshow","#page2", loadTakePicture);
 
+
+function loadTakePicture() {
 	loadCameraName();
 	loadCameraSettings();
 	loadPhotos(1);
 }
 
-
 function loadCameraSettings() {
-	setAlert("Loading camera settings...");
+	setPage1Alert("Loading camera settings...");
 	$.ajax({
 		url: "service.php?action=getCameraSettings",
 		dataType: "json",
 		success: function (data) {
-	console.log("Camera Settings...");
-			getCameraSettings(data);
+			displayCameraSettings(data);
 		}
 	});
 }
-
 
 function loadCameraName() {
 	$.ajax({
 		url: "service.php?action=getCamera",
 		dataType: "json",
 		success: function (data) {
-			getCamera(data);
+			displayCameraName(data);
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr);
@@ -58,7 +89,7 @@ function loadPhotos(page) {
 
 			// set global variable
 			CAMERAFILES = data.files;
-//console.log(data);
+
 			displayCameraFiles( 1 );
 
 		},
@@ -69,6 +100,7 @@ function loadPhotos(page) {
 		}
 	});
 }
+
 
 function displayCameraFiles (page) {
 	$.ajax({
@@ -110,19 +142,12 @@ function displayCameraFiles (page) {
 }
 
 
-$(document).on( "pageshow","#photos", loadPhotos);
-
-$(document).on( "pageshow","#take-picture", loadTakePicture);
-
-
-
-function getCamera (data) {
+function displayCameraName (data) {
 	$("#cameraName1").text(data.camera);
 	$("#cameraName2").text(data.camera);
 }
 
-
-function getCameraSettings(data){
+function displayCameraSettings(data){
 	var settingsHTML = "";
 	for(var i = 0; data.settings != null && i < data.settings.length; i++){
 		var setting = data.settings[i];
@@ -156,33 +181,13 @@ function getCameraSettings(data){
 
 	// Enable CSS
 	$("#settingsContainer").enhanceWithin();
-	clearAlert();
+	clearPage1Alert();
 }
 
 
 
-function setAlert (msg) {
-	html = $("#alertHTML").text();
-	html = html.replace(/@link/g, "#");
-	html = html.replace(/@message/g, msg);
-
-/*	$("#alertMessage").fadeOut(2000,500).slideUp(500, function() {
-		$("#alertMessage").alert('close');
-	});*/
-
-	$("alertContainer1").html(html);
-	$("alertContainer2").html(html);
-}
-function clearAlert () {
-	$("#alertContainer1").html("");
-	$("#alertContainer2").html("");
-}
 
 
-function settingChangeClick () {
-	//console.log(this);
-	
-}
 
 
 
