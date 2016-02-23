@@ -6,7 +6,7 @@ The original project can be found here:
 https://github.com/theonemule/gphoto-webui
 
 
-![Alt text](/screenshots/screen1.png "Screenshot")
+![Alt text](/screenshots/screen1.png =250px "Screenshot")
 
 
 
