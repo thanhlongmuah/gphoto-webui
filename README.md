@@ -6,20 +6,9 @@ The original project can be found here:
 https://github.com/theonemule/gphoto-webui
 
 
-![Alt text](/screenshots/screen1.jpg?raw=true "Optional Title")
+![Alt text](/screenshots/screen1.png "Screenshot")
 
 
-The reason I wrote this was simple: I wanted a remote control for my DSLR. That way, I can snap photos while I was in front of the camera from my smartphone and review them after the fact. I’m somewhat of a shutter bug in addition to being a tech geek. I could have bought a fancy dongle and installed an app on my phone to get the same sort of behavior, but I already had a Raspberry Pi (RasPi), and thought, “What if I could use that little mini computer to control my DSLR, then use my phone as remote?” Something like this maybe?
-
-[Smartphone] >-WiFi-< [RasPI] >—USB—< [Camera]
-
-gphoto2 is a CLI tool for doing things on many different models of cameras from all kinds of manufacturers, including Canon. All it needed was a way to control gphoto from my smartphone. I could use an SSH shell or a remote desktop, but where’s the fun in that? I applied some PHP, HTML, and JavaScript magic to make it all happen so any device with a web browser can control the camera as a remote control. I simply wrote a web based front-end for gphoto that is mobile friendly and posted it to GitHub for all to use, modify, and enjoy.
-
-I’m using a RasPi model “B” (512 MB), but there’s no reason this wouldn’t work on model “A” or another box using Debian or Ubuntu Linux. I also have a WiFi adapter on my RasPi. Mobile WiFi might be challenge… You could “tether” your RasPi to your phone or tablet, or your could set up your RasPi as a WiFi AP too. My phone and tablet both support tethering, so I just use that.
-
-Also, the RasPi needs power, and it doesn’t have a battery. It requires a 5v 1000ma DC connection to work. This isn’t to hard to reproduce with off the shelf batteries and a little McGyvering. There’s also after-market battery packs for the RasPi too.
-
-Anyways, here's how to make it work:
 
 1.) Power up your Raspberry Pi. Pull up a Terminal, logon through SSH, or whatever you do to get to a console.
 
@@ -56,10 +45,8 @@ http://whysohardtoget.blogspot.com/2013/05/compiling-gphoto2-252-with-raspberry-
 
 7.) Start the php server. This will bind the server to port 8000 on all IP’s.
 
-    php5 -S 0.0.0.0:8000
+    cd bin
+    ./gphoto-webui.sh
 
 8.) Point your browser to http://x.x.x.x:8000/  (x.x.x.x is the IP if your Raspberry Pi)
 
-9.) The WebUI is pretty much self explanatory. Hit the aperture icon to take a picture. View the images on the Gallery page. The images are captured in whatever format the camera is set to use, and this does support RAW images as well. Images are stored on the Raspberry Pi's SD card, not in the camera's memory.
-
-10.) The source images can be downloaded through the Web UI or can be FTP'd through an app like FileZilla over SFTP. The images are all stored in the "images" folder in relative to the root of the application. (i.e. ~/gphoto-webui-master/images) .
