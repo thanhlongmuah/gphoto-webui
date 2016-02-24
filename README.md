@@ -12,7 +12,7 @@ Features:
 * Timelapse settings (later)
 
 
-<img src="/screenshots/screen1.png" width="250" height="400" />
+<img src="/screenshots/screen1.png" width="225" height="400" />
 
 
 1. Install the following packages.
@@ -27,9 +27,7 @@ Note: You do not need a web server. In fact, I wouldn’t recommend it for this 
 
 2. Install latest gphoto2 (v2.5.9+). I recommend using the gphoto2-updater script here:
 
-```
 https://github.com/gonzalo/gphoto2-updater
-```
 
 3. Download the gphoto-webui from from github. I suggest your home folder, as it will extract a gphoto-webui folder.
 
