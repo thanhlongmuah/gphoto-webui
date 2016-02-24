@@ -44,8 +44,18 @@ if (isset($_GET['action'])){
 
 public function takePicture () {
 	$returnObj = new stdClass();
+	$returnObj->success = false;
+
+	// may need to set the capture target to SDCard first
+	// gphoto2 --set-config=/main/settings/capturetarget=1
+	//
+	//$setCaptureTarget = "gphoto2 --set-config=/main/settings/capturetarget=1; ";
+	exec ($setCaptureTarget . " gphoto2 --capture-image 2>&1", $output, $rv);
+	$returnObj->commandOutput = $output;
+/*
+	// capture the image and download it to the Pi right away
 	exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $out, $rv);
-	foreach ($out as $line) {
+	foreach ($output as $line) {
 		$line = " " . $line;	// add a space at the beginning so strpos can search correctly
 		if (strpos($line, 'Saving') !== false) {
 			// string found
@@ -55,11 +65,23 @@ public function takePicture () {
 			break;
 		}
 	}
-
 	if (strlen($returnObj->filename) == 0) {
 		$returnObj->message = trim(implode("\n", $out));
 		$returnObj->error = trim(implode("\n", $out));
 		$returnObj->returnStatus = false;
+	}
+*/
+	// New file is in location /store_00010001/DCIM/100EOS7D/IMG_9322.CR2 on the camera
+	if (preg_match("/^New file is in location /", $output[0])) {
+		//$filepath = explode(' ', $output[0]);
+		//$filearr  = explode('/', $filepath[5]);
+		//$cameraFile = $filearr[ count($filearr) - 1 ];	// get file name
+
+		$returnObj->message = $output[0];
+		$returnObj->success = true;
+	}
+	else {
+		$returnObj->error = "Could not capture image. Check camera settings or focus: " . $output[0];
 	}
 
 	return $returnObj;
@@ -184,7 +206,7 @@ public function getCameraFiles ($pageNum, $countOnPage) {
 
 	$returnObj->filenames = array ();
 	//foreach ($output as $line) {
-	for ($i = 0, $num = 0; $i < count($output) - 1; $i++) {
+	for ($i = 0, $num = 0; $i < count($output); $i++) {
 		$line = $output[$i];
 		//$line = preg_replace('!\s+!', ' ', $line);      // replace multiple spaces with just one
 		$arr = array ();
@@ -212,10 +234,13 @@ public function getCameraFiles ($pageNum, $countOnPage) {
 
 			// get resolution
 			if (file_exists ($fn)) {
-				$resource = new Imagick($fn);
+/*				$resource = new Imagick($fn);
 				$imageResolution = $resource->getImageResolution();
 				$arr["w"] = $imageResolution['y'];
 				$arr["h"] = $imageResolution['x'];
+*/
+				$arr['w'] = 0;
+				$arr['h'] = 0;
 			} else {
 				$arr['w'] = 0;
 				$arr['h'] = 0;
@@ -267,6 +292,55 @@ public function getListOfFiles () {
 		}
 	}
 
+	return $returnObj;
+}
+
+
+public function getFile ($fileID) {
+
+	$returnObj->success = false;
+
+	// verify id
+	if (is_numeric ($fileID) ) {
+		// change directory to tmp first
+		$rv = chdir ("tmp/");
+		// confirm we are in the correct directory
+		if ( ! $rv) {
+			$returnObj->error = "Could not change to the tmp directory";
+			return $returnObj;
+		}
+		// get-file
+		$cmd = "gphoto2 --skip-existing --get-file=" . $fileID . " >$$.txt; cat $$.txt; rm -f $$.txt";
+		exec ($cmd, $output, $rv);
+		// output sample: "Saving file as IMG_8617.CR2"
+		$line = implode ("", $output);
+		$returnObj->output = $output;
+		// verify file was saved
+		if (preg_match("/^Saving file as /", $line) || preg_match("/^Skip existing file /", $line) ) {
+			// success
+			// parse filename
+			$fn = explode(" ", $line)[3];
+			if (file_exists($fn)) {
+				// initiate file download
+/*				header("Content-Type: application/octet-stream");
+				header("Content-Disposition: attachment; filename=" . $_GET['fn']);
+				readfile($_GET['fn']);
+*/
+				$returnObj->filename = $fn;
+				$returnObj->success  = true;
+			}
+			else {
+				// failed
+				$returnObj->error = "File does not exist: " . $fn;
+			}
+		} else {
+			// failed
+			$returnObj->error = "Could not save file: " . $line;
+		}
+	}
+	else {
+		$returnObj->error = "Not a number: '" . $fileID . "'";
+	}
 	return $returnObj;
 }
 

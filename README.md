@@ -12,7 +12,7 @@ Features:
 * Timelapse settings (later)
 
 
-<img src="/screenshots/screen1.png" width="200" height="400" />
+<img src="/screenshots/screen1.png" width="250" height="400" />
 
 
 1. Install the following packages.

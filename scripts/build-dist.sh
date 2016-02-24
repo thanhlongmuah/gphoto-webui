@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WEBUIDIR=../../gphoto-webui/
+WEBUIDIR=~/gphoto-webui/
 TMPDIR=./gphoto-webui/
 ZIPNAME=gphoto-webui.zip
 

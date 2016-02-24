@@ -25,9 +25,32 @@ if (isset($_GET['action'])){
 
 
 
-try{
+try {
 	switch($action){
+		case "clearTempFiles":
+			// clear tmp directory
+			$dir = "tmp/";
+			$returnObj->success = false;
+			if (chdir($dir)) {
+				// clear files
+				array_map("unlink", glob('some/dir/*.txt'));	/**/
+				$returnObj->success = true;
+			}
+			else {
+				$returnObj->error = "Could not change directory: " . $dir;
+			}
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
 		case "takePicture":
+			$gphoto = new gPhoto();
+
+			chdir ($thumbsDir);
+			$returnObj = $gphoto->takePicture();
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
+
 			// take picture and copy it to the RPi
 			exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
 			// instead of taking the picture and downloading it, let's just get the thumbnail
@@ -125,7 +148,6 @@ try{
 			$returnObj = new stdClass();
 			$gphoto = new gPhoto();
 
-
 			chdir ($thumbsDir);
 			$returnObj = $gphoto->getCameraFiles($pageNum, $countOnPage);
 			$returnObj->thumbsDir = $thumbsDir;
@@ -133,6 +155,30 @@ try{
 			header('Content-Type: application/json');
 			echo json_encode ($returnObj);
 			break;
+
+		case "downloadImage":
+			$fileID = $_GET['num'];
+			$gphoto = new gPhoto();
+			$returnObj = $gphoto->getFile($fileID);
+
+			if ($returnObj->success) {
+				$fn = $returnObj->filename;
+				// extracting the extension:
+				$ext = substr($fn, strpos($fn,'.')+1);
+				// initiate file download
+				//header ("Content-Type: application/octet-stream");
+				header ("Content-Type: application/" . $ext);
+				header ("Content-Disposition: attachment; filename=" . $fn);
+				header ("Content-Length: " . filesize ($fn));
+				header ("Connection: close");
+				readfile ($fn);
+			}
+			else {
+				header('Content-Type: application/json');
+				echo json_encode ($returnObj);
+			}
+			break;
+
 
 
 
@@ -247,5 +293,9 @@ function justCurrent($data) {
 	);
 }
 
+
+function getFileDownload ( $fileID ) {
+
+}
 
 ?>
