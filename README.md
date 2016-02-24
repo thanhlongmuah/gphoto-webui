@@ -3,14 +3,13 @@ gphoto-webui
 
 My goal is to create a decent web interface through the rPi and be able to control my DSLR. I would have thought something like this already existed, but I couldn't find one with all the capabilities I was looking for.
 
-Features:
-* Change settings, such as ISO, Shutter Speed and Aperture
+Features (currently being implemented):
+* Change settings, such as ISO, Shutter Speed and Aperture - soon
 * Take picture
-* View photos on the camera
-* Download the original file to the phone
-* Download a converted JPEG to the phone (from RAW)
+* View photos on the camera - partial
+* Download the original file to the phone - partial
+* Download a converted JPEG to the phone (from RAW) - soon
 * Timelapse settings (later)
-
 
 <img src="/screenshots/screen1.png" width="225" height="400" />
 
