@@ -47,10 +47,11 @@ try {
 			echo json_encode($returnObj);
 			break;
 		case "takePicture":
-			chdir ($thumbsDir);
 			$returnObj = $gphoto->takePicture();
-			header('Content-Type: application/json');
-			echo json_encode($returnObj);
+			//header('Content-Type: application/json');
+			//echo json_encode($returnObj);
+			header('Content-Type: text/plain');
+			echo $returnObj;
 			break;
 
 			// take picture and copy it to the RPi

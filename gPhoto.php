@@ -65,7 +65,7 @@ public function takePicture () {
 
 	$returnObj = new stdClass();
 	$returnObj->success = false;
-	$imgDir = "./images/";
+	$imgDir = "images/";
 
 	// may need to set the capture target to SDCard first
 	// gphoto2 --set-config=/main/settings/capturetarget=1
@@ -74,7 +74,7 @@ public function takePicture () {
 	//exec ($setCaptureTarget . " gphoto2 --capture-image 2>&1", $output, $rv);
 	//exec ("gphoto2 --capture-image-and-download --keep --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
 
-	$rv = chdir ($imgdir);
+	$rv = chdir ($imgDir);
 	// confirm we are in the correct directory
 	if ( ! $rv) {
 		$returnObj->error = "Could not change to the 'images' directory";
@@ -93,24 +93,35 @@ public function takePicture () {
 
 		//$returnObj->message = $output[0];
 		$returnObj->message = "Photo taken: " . $cameraFile;
-		$returnObj->success = true;
 
 		// generate JPG preview image
-		$raw = new CameraRaw();
-		if (file_exists ($cameraFile)) {
-			if ($raw->isRawFile($cameraFile)) {
+		//$raw = new CameraRaw();
+		$cameraFileFull = realpath ($cameraFile);
+		if (file_exists ($cameraFileFull)) {
+			if (CameraRaw::isRawFile($cameraFileFull)) {
 				// raw, so let's convert
-				$cameraFileFull = realpath ($cameraFile);
 				$fileJPG        = $cameraFile . ".jpg";
 				$fileJPGFull    = realpath ($cameraFileFull) . ".jpg";
-				$raw->generateImage($cameraFileFull, $fileJPGFull, 1024, 768);
+$im = new Imagick($cameraFileFull);
+/*
+$im->setImageFormat('jpg');
+$im->setImageCompressionQuality($quality);
+$im->stripImage();
+$im->thumbnailImage($width, $height, true);
+$im->writeImage($targetFilePath);
+$im->clear();
+$im->destroy();
+*/
+				//CameraRaw::generateImage($cameraFileFull, $fileJPGFull, 1024, 768);
 			} else {
 				// already a jpg
 				$fileJPG = $cameraFile;
 			}
 			$returnObj->fileJPG = $fileJPG;
+			$returnObj->success = true;
+		} else {
+			$returnObj->error = "File does not exist";
 		}
-
 	}
 	else {
 		$returnObj->error = "Could not capture image. Check camera settings or focus: " . $output[0];

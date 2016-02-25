@@ -338,8 +338,12 @@ function hideLoading() {
 
 
 function captureSettingChange ( setting, value ){
-	console.log(setting);
-	console.log(value);
+	disableAllCameraFunctions();
+	displayLoading("Changinging camera setting...");
+
+
+	//console.log(setting);
+	//console.log(value);
 
 	$.ajax({
 		url: "service.php?action=setCameraSetting&setting=" + setting + "&value=" + value,
@@ -350,12 +354,11 @@ function captureSettingChange ( setting, value ){
 			enableAllCameraFunctions();
 			hideLoading()
 
-			if (data.success) {
-				// show successful message
-				setPage1Alert(data.message);
-			} else {
+			if ( ! data.success) {
 				setAlertOnPage("#alertContainer1", "danger", "Problem!", data.error);
 			}
+			enableAllCameraFunctions();
+			hideLoading();
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr);

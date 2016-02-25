@@ -82,7 +82,7 @@ class CameraRaw {
 			throw new \InvalidArgumentException('Incorrect filepath given');
 		}
 
-		$im = new Imagick($sourceFilePath);
+		$im = new \Imagick($sourceFilePath);
 		$im->setImageFormat('jpg');
 		$im->setImageCompressionQuality($quality); 
     		$im->stripImage(); 
