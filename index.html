@@ -13,13 +13,11 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-	<link rel="stylesheet" href="css/jquery.mobile.pagination.css" type="text/css" />
 
 	<!-- jQuery -->
 	<script src="js/jquery-2.1.4.min.js"></script>
 	<script src="js/jquery.mobile-1.4.5.js"></script>
 	<script src="js/bootstrap.js"></script>
-	<script src="js/jquery.mobile.pagination.js"></script>
 	<script src="js/custom.js"></script>
 
 </head>
@@ -125,10 +123,10 @@
 			<li class="ui-btn ui-mini ui-btn-inline ui-state-disabled" onclick="loadCameraFiles(@pageNum);">@text</li>
 		</script>
 		<script type="text/html" id="paginationPrevHTML">
-			<li class="ui-btn ui-mini ui-btn-inline ui-pagination-prev" onclick="loadPrevCameraFiles();">Prev</li>
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadPrevCameraFiles();">Prev</li>
 		</script>
 		<script type="text/html" id="paginationNextHTML">
-			<li class="ui-btn ui-mini ui-btn-inline ui-pagination-next" onclick="loadNextCameraFiles();">Next</li>
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadNextCameraFiles();">Next</li>
 		</script>
 
 		<ul class="row" id="paginationTop"></ul>
