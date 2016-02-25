@@ -47,8 +47,6 @@ try {
 			echo json_encode($returnObj);
 			break;
 		case "takePicture":
-			$gphoto = new gPhoto();
-
 			chdir ($thumbsDir);
 			$returnObj = $gphoto->takePicture();
 			header('Content-Type: application/json');
@@ -150,7 +148,6 @@ try {
 			$countOnPage = $_GET['count'];
 
 			$returnObj = new stdClass();
-			$gphoto = new gPhoto();
 
 			chdir ($thumbsDir);
 			$returnObj = $gphoto->getCameraFiles($pageNum, $countOnPage);
@@ -162,7 +159,6 @@ try {
 
 		case "downloadImage":
 			$fileID = $_GET['num'];
-			$gphoto = new gPhoto();
 			$returnObj = $gphoto->getFile($fileID);
 
 			if ($returnObj->success) {
@@ -231,14 +227,21 @@ try {
 			break;
 			break;
 
-		case "getCurrentCameraSettings":
-			$returnObj = getCameraSettings(false);
+		case "getCameraSettings":
+			$returnObj = getCameraSettings(true);
 
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
 			break;
-		case "getCameraSettings":
-			$returnObj = getCameraSettings(true);
+		case "setCameraSetting":
+			$setting = $_GET['setting'];
+			$value = $_GET['value'];
+			if ($setting != null || $value != null) {	// good
+				$returnObj = $gphoto->configSet($setting, $value);
+			} else {
+				$returnObj->success = false;
+				$returnObj->error = "Missing settings";
+			}
 
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
@@ -265,16 +268,16 @@ function getCameraSettings($includeOptions = true) {
 	$shutter	= $gphoto->getShutterSpeed();
 
 	$returnObj->settings = array ();		// need to set the array object first
-	$returnObj->returnStatus = false;
+	$returnObj->success = false;
 
 	if ($includeOptions) {
-		if ($iso->returnStatus) {
+		if ($iso->success) {
 			array_push($returnObj->settings,
 					$iso,
 					$aperture,
 					$shutter
 			);
-			$returnObj->returnStatus = true;
+			$returnObj->success = true;
 		}
 	} else {
 		array_push($returnObj->settings,

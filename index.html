@@ -49,7 +49,7 @@
 			<div class="alert alert-info flash">
 				<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
 				<strong>Info:</strong>
-				Loading current camera settings...
+				Loading capture settings from camera...
 			</div>
 		</div>
 		<!-- /#alert-message -->
@@ -59,13 +59,13 @@
 		</button>
 
 		<!-- Start camera settings  -->
-		<h3>Camera Settings</h3>
+		<h3>Capture Settings</h3>
 		<div class="container-fluid">
 			<!-- div class="ui-grid-solo" -->
 				<script type="text/html" id="settingsHTML">
 					<fieldset class="ui-field-contain">
 					<label for="@settingName"> @labelName </label>
-						<select name="@settingName" id="@settingName" onchange="settingChangeClick()">
+						<select name="@settingName" id="@settingName" onchange="captureSettingChange('@settingConfig', this.value)">
 							@settingLineItems
 						</select>
 					</fieldset>

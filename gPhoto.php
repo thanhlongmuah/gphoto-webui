@@ -129,11 +129,11 @@ public function getCamera () {
 	//var_dump($output);	//debug
 	$returnObj->camera = trim(explode("usb", $output[count($output) - 1])[0]);
 	if (strpos(" " . $returnObj->camera, '-------------------------') !== false) {
-		$returnObj->returnStatus = false;
+		$returnObj->success = false;
 		$returnObj->camera = "-- no camera detected --";
 		$returnObj->error = "Camera not detected.";
 	} else {
-		$returnObj->returnStatus = true;
+		$returnObj->success = true;
 	}
 
 	return $returnObj;
@@ -144,7 +144,7 @@ public function configList () {
 	$returnObj = new stdClass();
 	exec ("gphoto2 --list-config 2>&1", $output, $rv);
 	$returnObj->config = $output;
-	$returnObj->returnStatus = true;
+	$returnObj->success = true;
 
 	return $returnObj;
 }
@@ -153,7 +153,7 @@ public function configList () {
 public function configGet ($config) {
 	$returnObj = new stdClass ();
 	$options = array ();
-	$returnObj->returnStatus = false;	// set as default
+	$returnObj->success = false;	// set as default
 
 	try {
 		// sanitize "$config" input first
@@ -166,7 +166,7 @@ public function configGet ($config) {
 			foreach ($output as $line) {
 				if (preg_match("/^Label: /", $line)) {
 					$returnObj->label	= explode (' ', $line, 2)[1];
-					$returnObj->returnStatus = true;
+					$returnObj->success = true;
 				} elseif (preg_match("/^Type: /", $line)) {
 					$returnObj->type	= explode (' ', $line, 2)[1];
 				} elseif (preg_match("/^Current: /", $line)) {
@@ -190,14 +190,21 @@ public function configGet ($config) {
 
 
 public function configSet ($config, $value) {
-	// config variables
-	
-
-
 	$returnObj = new stdClass();
-	exec ("gphoto2 --config-set 2>&1", $output, $rv);
-	$returnObj->config = $output;
-	$returnObj->returnStatus = true;
+	$returnObj->success = false;
+	// verify variables
+	if (preg_match ("/^[\w\/]+$/", $config) && is_numeric($value)) {	// Good
+		exec ("gphoto2 --set-config=" . $config . "=" . $value . " 2>&1", $output, $rv);
+		$returnObj->commandOutput = $output;
+		if ($rv == 0) {
+			$returnObj->message = "Success";
+			$returnObj->success = true;
+		} else {
+			$returnObj->error = "Could not set value: " . $output[0];
+		}
+	} else {
+		$returnObj->error = "Invalid character in command";
+	}
 
 	return $returnObj;
 }

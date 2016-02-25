@@ -1,6 +1,6 @@
 // Global variables
 var CAMERAFILES;
-var PHOTOSPERPAGE = 30;
+var PHOTOSPERPAGE = 50;
 var CAMERAFILESPAGENUM;
 
 
@@ -9,6 +9,9 @@ function setPage1Alert (msg) {
 }
 function setPage2Alert (msg) {
 	setAlertOnPage ("#alertContainer2", "info", "Info:", msg);
+}
+function setPage3Alert (msg) {
+	setAlertOnPage ("#alertContainer3", "info", "Info:", msg);
 }
 function setAlertOnPage (container, alertClass, alertType, msg) {
 	html = $("#alertHTML").text();
@@ -30,6 +33,9 @@ function clearPage1Alert () {
 function clearPage2Alert () {
 	clearAlertOnPage ("#alertContainer2");
 }
+function clearPage3Alert () {
+	clearAlertOnPage ("#alertContainer3");
+}
 function clearAlertOnPage ( container ) {
 	$( container ).html("");
 }
@@ -48,7 +54,7 @@ window.setTimeout(function() {
 
 $(document).ready( initialPageLoad );
 //$(document).on( "pageshow","#page-one", loadTakePicture);
-//$(document).on( "pageshow","#page-two", loadCameraFiles);
+//$(document).on( "pageshow","#page-three", load);
 
 // load at the start
 function initialPageLoad() {
@@ -61,10 +67,12 @@ function initialPageLoad() {
 function enableAllCameraFunctions() {
 	$("#page-one :input").attr("disabled", false);
 	$("#page-two :input").attr("disabled", false);
+	$("#page-three :input").attr("disabled", false);
 }
 function disableAllCameraFunctions() {
 	$("#page-one :input").attr("disabled", true);
 	$("#page-two :input").attr("disabled", true);
+	$("#page-three :input").attr("disabled", true);
 }
 
 function loadCameraName() {
@@ -166,6 +174,7 @@ function displayCameraSettings(data){
 			html = $("#settingsHTML").text();
 			html = html.replace(/@settingName/g, setting.configName);
 			html = html.replace(/@labelName/g, setting.label);
+			html = html.replace(/@settingConfig/g, setting.config);
 			lineItems = "";
 			for (var x = 0; x < setting.cameraSettings.length; x++) {
 				line = $("#settingLineItemHTML").text();
@@ -302,8 +311,12 @@ function takePicture(){
 			enableAllCameraFunctions();
 			hideLoading()
 
-			// show successful message
-			setPage1Alert(data.message);
+			if (data.success) {
+				// show successful message
+				setPage1Alert(data.message);
+			} else {
+				setAlertOnPage("#alertContainer1", "danger", "Problem!", data.error);
+			}
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr);
@@ -324,22 +337,30 @@ function hideLoading() {
 }
 
 
+function captureSettingChange ( setting, value ){
+	console.log(setting);
+	console.log(value);
 
+	$.ajax({
+		url: "service.php?action=setCameraSetting&setting=" + setting + "&value=" + value,
+		dataType : "json",
+		success: function(data){
 
-function ddddddupdateCameraGalleryGrid(data){
-	var galleryHTML = "";
+			//console.log(data);
+			enableAllCameraFunctions();
+			hideLoading()
 
-	//console.log(data);
-
-	var image = "";
-	for (var i = 0; i < data.files.length; i++) {
-		image = data.files[i];
-
-		$("#cameraGalleryGrid").append("<div class='ui-block-b'>");
-		$("#cameraGalleryGrid").append("<p><img src='' /></p>");
-		$("#cameraGalleryGrid").append("<p>" + image.filename + "</p>");
-		$("#cameraGalleryGrid").append("<p></p>");
-		$("#cameraGalleryGrid").append("");
-		$("#cameraGalleryGrid").append("</div>\n");
-	}
+			if (data.success) {
+				// show successful message
+				setPage1Alert(data.message);
+			} else {
+				setAlertOnPage("#alertContainer1", "danger", "Problem!", data.error);
+			}
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
 }
