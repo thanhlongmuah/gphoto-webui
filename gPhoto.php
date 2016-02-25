@@ -1,5 +1,5 @@
 <?php
-//require_once("CameraRaw.php");
+require_once("CameraRaw.php");
 class gPhoto {
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -43,15 +43,6 @@ if (isset($_GET['action'])){
 
 
 public function takePicture () {
-	$returnObj = new stdClass();
-	$returnObj->success = false;
-
-	// may need to set the capture target to SDCard first
-	// gphoto2 --set-config=/main/settings/capturetarget=1
-	//
-	//$setCaptureTarget = "gphoto2 --set-config=/main/settings/capturetarget=1; ";
-	exec ($setCaptureTarget . " gphoto2 --capture-image 2>&1", $output, $rv);
-	$returnObj->commandOutput = $output;
 /*
 	// capture the image and download it to the Pi right away
 	exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $out, $rv);
@@ -71,18 +62,62 @@ public function takePicture () {
 		$returnObj->returnStatus = false;
 	}
 */
-	// New file is in location /store_00010001/DCIM/100EOS7D/IMG_9322.CR2 on the camera
-	if (preg_match("/^New file is in location /", $output[0])) {
-		//$filepath = explode(' ', $output[0]);
-		//$filearr  = explode('/', $filepath[5]);
-		//$cameraFile = $filearr[ count($filearr) - 1 ];	// get file name
 
-		$returnObj->message = $output[0];
+	$returnObj = new stdClass();
+	$returnObj->success = false;
+	$imgDir = "./images/";
+
+	// may need to set the capture target to SDCard first
+	// gphoto2 --set-config=/main/settings/capturetarget=1
+	//
+	//$setCaptureTarget = "gphoto2 --set-config=/main/settings/capturetarget=1; ";
+	//exec ($setCaptureTarget . " gphoto2 --capture-image 2>&1", $output, $rv);
+	//exec ("gphoto2 --capture-image-and-download --keep --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $output, $rv);
+
+	$rv = chdir ($imgdir);
+	// confirm we are in the correct directory
+	if ( ! $rv) {
+		$returnObj->error = "Could not change to the 'images' directory";
+		return $returnObj;
+	}
+	exec ("gphoto2 --capture-image-and-download --keep 2>&1", $output, $rv);
+	$returnObj->commandOutput = $output;
+
+	// Saving file as IMG_9342.CR2
+	$line = $output[1];
+	if (preg_match("/^Saving file as /", $line)) {
+		$cameraFile = explode(' ', $line)[3];
+		//$filearr  = explode('/', $filepath[3]);
+		//$cameraFile = $filearr[ count($filearr) - 1 ];	// get file name
+		$returnObj->file = $cameraFile;
+
+		//$returnObj->message = $output[0];
+		$returnObj->message = "Photo taken: " . $cameraFile;
 		$returnObj->success = true;
+
+		// generate JPG preview image
+		$raw = new CameraRaw();
+		if (file_exists ($cameraFile)) {
+			if ($raw->isRawFile($cameraFile)) {
+				// raw, so let's convert
+				$cameraFileFull = realpath ($cameraFile);
+				$fileJPG        = $cameraFile . ".jpg";
+				$fileJPGFull    = realpath ($cameraFileFull) . ".jpg";
+				$raw->generateImage($cameraFileFull, $fileJPGFull, 1024, 768);
+			} else {
+				// already a jpg
+				$fileJPG = $cameraFile;
+			}
+			$returnObj->fileJPG = $fileJPG;
+		}
+
 	}
 	else {
 		$returnObj->error = "Could not capture image. Check camera settings or focus: " . $output[0];
 	}
+
+	// change back to the home directory
+	chdir ($_SERVER['DOCUMENT_ROOT']);
 
 	return $returnObj;
 }
@@ -181,6 +216,7 @@ public function getShutterSpeed () {
 
 
 public function getCameraFiles ($pageNum, $countOnPage) {
+	$returnObj->success = false;
 
 	// first, confirm variables are numbers
 	if ( ! is_numeric($pageNum) && ! is_numeric($countOnPage) && $pageNum > 1000 && $countOnPage > 1000000 && $pageNum < 1 && $countOnPage < 5) {
@@ -229,6 +265,10 @@ public function getCameraFiles ($pageNum, $countOnPage) {
 
 		// get resolution for current image
 		if ( $imageFound) {
+
+			// set success flag
+			$returnObj->success = true;
+
 			$arr["num"]  = $startAt + $num;
 			$arr["name"] = $fn;
 
@@ -303,7 +343,7 @@ public function getFile ($fileID) {
 	// verify id
 	if (is_numeric ($fileID) ) {
 		// change directory to tmp first
-		$rv = chdir ("tmp/");
+		$rv = chdir ("./tmp/");
 		// confirm we are in the correct directory
 		if ( ! $rv) {
 			$returnObj->error = "Could not change to the tmp directory";
@@ -341,6 +381,8 @@ public function getFile ($fileID) {
 	else {
 		$returnObj->error = "Not a number: '" . $fileID . "'";
 	}
+	// change back to the home directory
+	chdir ($_SERVER['DOCUMENT_ROOT']);
 	return $returnObj;
 }
 

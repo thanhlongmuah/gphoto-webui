@@ -13,12 +13,13 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-	<!-- link rel="stylesheet" href="css/custom.css" type="text/css" / -->
+	<link rel="stylesheet" href="css/jquery.mobile.pagination.css" type="text/css" />
 
 	<!-- jQuery -->
 	<script src="js/jquery-2.1.4.min.js"></script>
 	<script src="js/jquery.mobile-1.4.5.js"></script>
 	<script src="js/bootstrap.js"></script>
+	<script src="js/jquery.mobile.pagination.js"></script>
 	<script src="js/custom.js"></script>
 
 </head>
@@ -27,9 +28,9 @@
 <!-- Start of first page -->
 <div data-role="page" id="page-one">
 	<script type="text/html" id="alertHTML">
-		<div class='alert alert-info flash'>
+		<div class='alert alert-@alertClass flash'>
 			<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-			<strong>Info:</strong>
+			<strong> @alertType </strong>
 			@message
 		</div>
 	</script>
@@ -115,20 +116,24 @@
 				</a>
 			</div>
 		</script>
+		<script type="text/html" id="paginationItemHTML">
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadCameraFiles(@pageNum);">@text</li>
+		</script>
+		<script type="text/html" id="paginationItemDisabledHTML">
+			<li class="ui-btn ui-mini ui-btn-inline ui-state-disabled" onclick="loadCameraFiles(@pageNum);">@text</li>
+		</script>
+		<script type="text/html" id="paginationPrevHTML">
+			<li class="ui-btn ui-mini ui-btn-inline ui-pagination-prev" onclick="loadPrevCameraFiles();">Prev</li>
+		</script>
+		<script type="text/html" id="paginationNextHTML">
+			<li class="ui-btn ui-mini ui-btn-inline ui-pagination-next" onclick="loadNextCameraFiles();">Next</li>
+		</script>
+
+		<ul class="row" id="paginationTop"></ul>
 		<ul id="cameraThumbsContainer" class="ui-grid-d ui-responsive"></ul>
+		<ul class="row" id="paginationBottom"></ul>
 	</div>
 </div>
 <!-- /#page-content-wrapper -->
-
-
-
-    <!-- Menu Toggle Script -->
-    <script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-    </script>
-
 </body>
 </html>

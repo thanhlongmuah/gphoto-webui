@@ -2,11 +2,15 @@
 require_once("CameraRaw.php");
 require_once("gPhoto.php");
 
+// make sure we're in the correct directory
+chdir ($_SERVER['DOCUMENT_ROOT']);
+
 ////////////////////////////////////////////////////////////////////////////
 // Variables
 //
 $returnObj = new stdClass();	// set the object to avoid the php warning
 $thumbsDir = "thumbs/";		// thumbnail directory
+$gphoto = new gPhoto();
 
 
 //time gphoto2 --quiet --capture-image-and-download --filename "./images/capture-%Y%m%d-%H%M%S-%03n.%C"
@@ -94,13 +98,13 @@ try {
 		case "getCamera":
 			exec ("gphoto2 --auto-detect", $output);
 			//var_dump($output);	//debug
+			$returnObj->success = false;
 			$returnObj->camera = trim(explode("usb", $output[count($output) - 1])[0]);
 			if (strpos(" " . $returnObj->camera, '-------------------------') !== false) {
-				$returnObj->rv = false;
 				$returnObj->camera = "-- no camera detected --";
 				$returnObj->error = "Camera not detected.";
 			} else {
-				$returnObj->rv = true;
+				$returnObj->success = true;
 			}
 
 			header('Content-Type: application/json');
@@ -220,9 +224,6 @@ try {
 			break;
 
 		case "getListOfCameraFiles":
-			$returnObj = new stdClass();
-			$gphoto = new gPhoto();
-
 			$returnObj = $gphoto->getListOfFiles();
 
 			header('Content-Type: application/json');
@@ -282,6 +283,7 @@ function getCameraSettings($includeOptions = true) {
 				justCurrent($shutter)
 		);
 	}
+	$returnObj->success = true;
 	return $returnObj;
 }
 
