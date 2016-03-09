@@ -1,6 +1,6 @@
 // Global variables
 var CAMERAFILES;
-var PHOTOSPERPAGE = 50;
+var PHOTOSPERPAGE = 100;
 var CAMERAFILESPAGENUM;
 var ALLCAMERASETTINGS;
 
@@ -144,7 +144,7 @@ function loadCameraFiles(page) {
 
 	// compare if the current page has already been loaded
 	if (page == CAMERAFILESPAGENUM) {
-		console.log("Page " + page + " has already been loaded. Ignoring.");
+		console.log("Page " + page + " has already been loaded. No need to load again.");
 	}
 	// new page, so let's load
 	else {
@@ -327,7 +327,7 @@ console.log("SELECTED");
 }
 
 function displayCameraFiles (page) {
-	console.log("CameraFiles Page: " + page);
+	console.log("Loading Camera files on page: " + page);
 
 	$.ajax({
 		url: "service.php?action=getCameraFiles&page=" + page + "&count=" + PHOTOSPERPAGE,
@@ -348,11 +348,18 @@ function displayCameraFiles (page) {
 					var fullImage = "";
 					// add photo to page
 					$("#cameraThumbsContainer");
-					html = $("#cameraThumbsHTML").text();
+					html = "";
+					if (thumb.extension == "JPG" || thumb.extension == "JPEG") {
+						html = $("#cameraThumbsHTMLJPG").text();
+					} else {
+						html = $("#cameraThumbsHTMLORI").text();
+					}
 					html = html.replace(/@thumbURL/g, thumbsDir + thumb.name);
-					html = html.replace(/@imageURL/g, "/service.php?action=downloadImage&num=" + thumb.num);
+					html = html.replace(/@downloadURLJPG/g, "/service.php?action=downloadImageJPG&num=" + thumb.num);
+					html = html.replace(/@downloadURLORI/g, "/service.php?action=downloadImageORI&num=" + thumb.num);
 					html = html.replace(/@imageLabel/g, CAMERAFILES[thumb.num - 1].filename);
 					html = html.replace(/@imageAlt/g, CAMERAFILES[thumb.num - 1].filename);
+					html = html.replace(/@extension/g, thumb.extension);
 					$("#cameraThumbsContainer").append( html );
 				}
 				//console.log(items);

@@ -94,7 +94,11 @@ public function takePicture () {
 		//$raw = new CameraRaw();
 /*		$cameraFileFull = realpath ($cameraFile);
 		if (file_exists ($cameraFileFull)) {	// confirm file exists
-$ext = "cr2";
+
+			// get file extension
+			$f = SplFileInfo($cameraFileFull);
+			$ext = $f->getExtension();
+
 			if ( $ext == "jpg" || $ext == "jpeg" ) {	// check if it's already a jpg/jpeg
 				// already a jpg
 				$fileJPG = $cameraFile;
@@ -267,18 +271,20 @@ public function getCameraFiles ($pageNum, $countOnPage) {
 	exec ("gphoto2 --skip-existing --get-thumbnail " . $startAt . "-" . $endAt . " 2>&1", $output, $rv);
 
 	$returnObj->filenames = array ();
-	//foreach ($output as $line) {
 	for ($i = 0, $num = 0; $i < count($output); $i++) {
 		$line = $output[$i];
 		//$line = preg_replace('!\s+!', ' ', $line);      // replace multiple spaces with just one
 		$arr = array ();
 		$imageFound = false;
 		$fn = "";
+		$ext = "";
 
 		if (preg_match ("/^Saving file as /", $line)) {			// new thumb file
 			$imageFound = true;
 			// rename file to jpg/jpeg
 			$name = explode (" ", $line)[3];
+			$fn_exploded = explode('.', $name);
+			$ext = strtoupper ($fn_exploded[ count ($fn_exploded) - 1 ]);
 			$fn = $name . ".jpg";
 			rename ($name, $fn);
 		}
@@ -288,15 +294,14 @@ public function getCameraFiles ($pageNum, $countOnPage) {
 			$arr["name"] = $fn;
 		}
 
-
 		// get resolution for current image
 		if ( $imageFound) {
 
 			// set success flag
 			$returnObj->success = true;
-
-			$arr["num"]  = $startAt + $num;
-			$arr["name"] = $fn;
+			$arr["num"]		= $startAt + $num;
+			$arr["name"]		= $fn;
+			$arr["extension"]	= $ext;
 
 			// get resolution
 			if (file_exists ($fn)) {
@@ -369,12 +374,13 @@ public function getFile ($fileID) {
 	// verify id
 	if (is_numeric ($fileID) ) {
 		// change directory to tmp first
-		$rv = chdir ("./tmp/");
+		//$rv = chdir ("./tmp/");
 		// confirm we are in the correct directory
-		if ( ! $rv) {
+/*		if ( ! $rv) {
 			$returnObj->error = "Could not change to the tmp directory";
 			return $returnObj;
 		}
+*/
 		// get-file
 		$cmd = "gphoto2 --skip-existing --get-file=" . $fileID . " >$$.txt; cat $$.txt; rm -f $$.txt";
 		exec ($cmd, $output, $rv);

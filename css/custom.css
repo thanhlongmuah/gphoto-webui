@@ -1,5 +1,21 @@
+.thumb-container {
+	margin:			0px;
+	padding:		0px;
+}
 .image-thumb {
-	border-radius:	25px;
-	border:	2px solid #FF00FF;
-	padding:	20px;
+	display:		inline-block;
+	border-radius:		3px;
+	border:			2px solid #000000;
+	padding:		5px;
+	margin:			5px;
+	background-color:	#FFFFFF;
+}
+.thumb-link-container {
+	clear: both;
+}
+.thumb-link-image {
+	width:			30px;
+	height:			30px;
+	padding:		0px;
+	margin:			3px;
 }

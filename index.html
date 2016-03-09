@@ -13,6 +13,7 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+	<link rel="stylesheet" href="css/custom.css" type="text/css" />
 
 	<!-- jQuery -->
 	<script src="js/jquery-2.1.4.min.js"></script>
@@ -101,12 +102,21 @@
 	<!-- Page Content -->
 	<div data-role="main" class="ui-content" style="text-align:center">
 		<div id="alertContainer2" class="row"></div>
-		<script type="text/html" id="cameraThumbsHTML">
-			<div class="ui-block-b image-thumb">
-				<a href="@imageURL" target="_blank">
-					<img src="@thumbURL" alt="@imageAlt" />
-					<p> @imageLabel </p>
-				</a>
+		<script type="text/html" id="cameraThumbsHTMLORI">
+			<div class="image-thumb">
+				<img src="@thumbURL" alt="@imageLabel" />
+				<div class="thumb-link-container">
+					<a href="@downloadURLJPG" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">JPG</a>
+					<a href="@downloadURLORI" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">@extension</a>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="cameraThumbsHTMLJPG">
+			<div class="image-thumb">
+				<img src="@thumbURL" alt="@imageLabel" />
+				<div class="thumb-link-container">
+					<a href="@downloadURLORI" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">@extension</a>
+				</div>
 			</div>
 		</script>
 		<script type="text/html" id="paginationItemHTML">
@@ -123,7 +133,7 @@
 		</script>
 
 		<ul class="row" id="paginationTop"></ul>
-		<ul id="cameraThumbsContainer" class="ui-grid-d ui-responsive"></ul>
+		<ul id="cameraThumbsContainer" class="thumb-container"></ul>
 		<ul class="row" id="paginationBottom"></ul>
 	</div>
 </div>

@@ -124,7 +124,7 @@ try {
 			echo json_encode ($returnObj);
 			break;
 
-		case "downloadImage":
+		case "downloadImageORI":
 			$fileID = $_GET['num'];
 			$returnObj = $gphoto->getFile($fileID);
 			$dir = "./tmp/";
@@ -141,6 +141,55 @@ try {
 				header ("Content-Length: " . filesize ($dir . $fn));
 				header ("Connection: close");
 				readfile ($dir . $fn);
+			}
+			else {
+				$fn = realpath($dir . $returnObj->filename);
+				$ext = substr($fn, strpos($fn,'.')+1);
+				$returnObj->ext = $ext;
+				$returnObj->fn = $fn;
+
+				header('Content-Type: application/json');
+				echo json_encode ($returnObj);
+			}
+			break;
+		case "downloadImageJPG":
+			$fileID = $_GET['num'];
+			$dir = "./tmp/";
+			chdir ($dir);
+			$returnObj = $gphoto->getFile($fileID);
+
+			if ($returnObj->success) {
+				$short_name = $returnObj->filename;
+				$fn = realpath ($dir . $returnObj->filename);
+				$jpg = $fn . ".jpg";
+				$short_jpg = $short_name . ".jpg";
+				// check if file already exists
+				if ( ! file_exists ($jpg) ) {
+					// convert to jpg via ufraw-batch
+					$cmd = "ufraw-batch --exposure=auto --compression=80 --out-path=" . $dir . " --out-type=jpg --output=" . $jpg . " " . $fn . " 2>&1";
+					exec ($cmd, $output, $rv);
+				}
+
+				if ($rv == 0) {		// successful conversion
+					// extracting the extension:
+					//$ext = substr($jpg, strpos($jpg,'.')+1);
+					$ext = "jpg";
+					// initiate file download
+					header ("Content-Type: application/octet-stream");
+					header ("Content-Type: application/" . $ext);
+					header ("Content-Disposition: attachment; filename=" . $short_jpg);
+					header ("Expires: 0");
+					header ("Content-Length: " . filesize ($jpg));
+					header ("Connection: close");
+					readfile ($jpg);
+				} else {		// failed conversion
+					$returnObj->cmd = $cmd;
+					$returnObj->output = $output;
+					$returnObj->error = "ufraw-batch conversion failed";
+					$returnObj->success = false;
+					header('Content-Type: application/json');
+					echo json_encode ($returnObj);
+				}
 			}
 			else {
 				$fn = realpath($dir . $returnObj->filename);
