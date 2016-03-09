@@ -17,7 +17,7 @@ Features (currently being implemented):
 1) Install the following packages.
 
 ```
-sudo apt-get install imagemagick php5 php5-cli php5-imagick php5-json zip unzip exiv2
+sudo apt-get install php5 php5-cli php5-json zip unzip exiv2 ufraw
 ```
 
 Note: You do not need a web server. In fact, I wouldn’t recommend it for this little app because this app will need more elevated permissions than the www-data user has. Configuring the server to run a user with elevated permissions might work, but not necessary. PHP has a built in development server that will work just fine and also run as the logged on user. 

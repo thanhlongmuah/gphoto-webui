@@ -2,6 +2,7 @@
 var CAMERAFILES;
 var PHOTOSPERPAGE = 50;
 var CAMERAFILESPAGENUM;
+var ALLCAMERASETTINGS;
 
 
 function setPage1Alert (msg) {
@@ -54,30 +55,32 @@ window.setTimeout(function() {
 
 $(document).ready( initialPageLoad );
 //$(document).on( "pageshow","#page-one", loadTakePicture);
+$(document).on( "pageshow","#page-two", loadCameraFiles);
 //$(document).on( "pageshow","#page-three", load);
 
 // load at the start
 function initialPageLoad() {
 	disableAllCameraFunctions();
 	loadCameraName();
-	loadCameraSettings();
-	loadCameraFiles(1);
+	loadCaptureSettings();
+	//loadCameraFiles(1);
+	loadAllCameraSettings();
 }
 
-function enableAllCameraFunctions() {
-	$("#page-one :input").attr("disabled", false);
-	$("#page-two :input").attr("disabled", false);
-	$("#page-three :input").attr("disabled", false);
-}
 function disableAllCameraFunctions() {
 	$("#page-one :input").attr("disabled", true);
 	$("#page-two :input").attr("disabled", true);
 	$("#page-three :input").attr("disabled", true);
 }
+function enableAllCameraFunctions() {
+	$("#page-one :input").attr("disabled", false);
+	$("#page-two :input").attr("disabled", false);
+	$("#page-three :input").attr("disabled", false);
+}
 
 function loadCameraName() {
 	$.ajax({
-		url: "service.php?action=getCamera",
+		url: "service.php?action=getCameraName",
 		dataType: "json",
 		success: function (data) {
 
@@ -92,14 +95,27 @@ function loadCameraName() {
 	});
 }
 
-function loadCameraSettings() {
+function loadCaptureSettings() {
 	//setPage1Alert("Loading camera settings...");
 	$.ajax({
-		url: "service.php?action=getCameraSettings",
+		url: "service.php?action=getCaptureSettings",
 		dataType: "json",
 		success: function (data) {
 
-			displayCameraSettings(data);
+			displayCaptureSettings(data);
+
+		}
+	});
+}
+
+function loadAllCameraSettings() {
+	setPage3Alert("Loading all camera settings...");
+	$.ajax({
+		url: "service.php?action=getAllCameraSettings",
+		dataType: "json",
+		success: function (data) {
+
+			displayAllCameraSettings(data);
 
 		}
 	});
@@ -116,15 +132,25 @@ function loadNextCameraFiles() {
 	}
 }
 function loadCameraFiles(page) {
-	disableAllCameraFunctions();
-	displayLoading("Loading camera photos...");
+	if ( page == undefined || isNaN(page) ) {
+		// check if a previous page was loaded
+		if (isNaN(CAMERAFILESPAGENUM)) {
+			page = 1;
+		} else {
+			page = CAMERAFILESPAGENUM;
+		}
+	}
+
 
 	// compare if the current page has already been loaded
-	if (isNaN( page ) || page == CAMERAFILESPAGENUM) {
+	if (page == CAMERAFILESPAGENUM) {
 		console.log("Page " + page + " has already been loaded. Ignoring.");
 	}
 	// new page, so let's load
 	else {
+		disableAllCameraFunctions();
+		displayLoading("Loading camera photos...");
+
 		//console.log("Loading camera files...");
 
 		$.ajax({
@@ -148,20 +174,21 @@ function loadCameraFiles(page) {
 	}
 }
 
-
 function displayCameraName (data) {
 	$("#cameraName1").text(data.camera);
 	$("#cameraName2").text(data.camera);
+	$("#cameraName3").text(data.camera);
 	if (data.success) {
 		enableAllCameraFunctions();
 	}
 	else {
 		setAlertOnPage("#alertContainer1", "danger", "Problem!", "Could not detect a camera. All functionality is turned off.");
 		setAlertOnPage("#alertContainer2", "danger", "Problem!", "Could not detect a camera. All functionality is turned off.");
+		setAlertOnPage("#alertContainer3", "danger", "Problem!", "Could not detect a camera. All functionality is turned off.");
 	}
 }
 
-function displayCameraSettings(data){
+function displayCaptureSettings(data){
 	var settingsHTML = "";
 
 	//console.log("displayCameraSettings");
@@ -171,13 +198,13 @@ function displayCameraSettings(data){
 		for(var i = 0; data.settings != null && i < data.settings.length; i++){
 			var setting = data.settings[i];
 			//console.log(setting);
-			html = $("#settingsHTML").text();
+			html = $("#captureSettingsHTML").text();
 			html = html.replace(/@settingName/g, setting.configName);
 			html = html.replace(/@labelName/g, setting.label);
 			html = html.replace(/@settingConfig/g, setting.config);
 			lineItems = "";
 			for (var x = 0; x < setting.cameraSettings.length; x++) {
-				line = $("#settingLineItemHTML").text();
+				line = $("#captureSettingLineItemHTML").text();
 				line = line.replace(/@index/g, setting.cameraSettings[x].index);
 				line = line.replace(/@value/g, setting.cameraSettings[x].value);
 				selected = "";
@@ -187,18 +214,116 @@ function displayCameraSettings(data){
 			}
 			html = html.replace(/@settingLineItems/g, lineItems);
 			if (i == 0) {
-				$("#settingsContainer").html( html );
+				$("#captureSettingsContainer").html( html );
 			} else {
-				$("#settingsContainer").append( html );
+				$("#captureSettingsContainer").append( html );
 			}
 		}
 		clearPage1Alert();
 	} else {	// error
-		$("#settingsContainer").html("Could not retrieve camera settings.");
+		$("#captureSettingsContainer").html("Could not retrieve camera settings.");
 	}
 
 	// Enable CSS on the new DOM objects
-	$("#settingsContainer").enhanceWithin();
+	$("#captureSettingsContainer").enhanceWithin();
+}
+
+function displayAllCameraSettings(data){
+	ALLCAMERASETTINGS = data.config;
+
+	//console.log(data);
+
+	$("#page-three").enhanceWithin();
+
+	if (data.success) {	// success
+		for(var i = 0; data.config != null && i < data.config.length; i++){
+			var setting = data.config[i];
+			//console.log(setting);
+			html = $("#cameraSettingHTML").text();
+			html = html.replace(/@setting/g, setting);
+			html = html.replace(/@text/g, setting);
+			$("#cameraSettingsContainer").append( html );
+		}
+	}
+
+	// Enable CSS on the new DOM objects
+	$("#cameraSettingsContainer").listview("refresh");	// refresh the listview after an update
+	$("#cameraSettingsContainer").enhanceWithin();
+	clearPage3Alert();
+}
+
+function loadCameraSetting ( setting ) {
+	displayLoading("Loading setting from Camera...");
+	//setPage3Alert("Loading setting...");
+	//console.log(setting);
+
+	$.ajax({
+		url: "service.php?action=getCameraSetting&setting=" + setting,
+		dataType: "json",
+		success: function (data) {
+
+			displayCameraSetting( data );
+
+			hideLoading();
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
+}
+function displayCameraSetting ( data ) {
+	console.log(data);
+	console.log(data.type);
+
+	list = "";
+	for (i = 0; i < data.cameraSettings.length; i++) {
+		selected = "";
+		if (data.cameraSettings[i].value == data.current) {
+			selected = "selected";
+console.log("SELECTED");
+		}
+			// Types:
+			// TOGGLE
+			// RADIO
+			// OPTION
+			// DATE
+			// TEXT
+
+		lihtml = $("#panelLiHTML").text();
+		lihtml = lihtml.replace(/@index/g, data.cameraSettings[i].index);
+		lihtml = lihtml.replace(/@value/g, data.cameraSettings[i].value);
+		lihtml = lihtml.replace(/@selected/g, selected);
+		list += lihtml;
+	}
+
+	html = $( "#panelHTML" + data.type.toUpperCase() ).text();
+	html = html.replace(/@labelName/g, data.label);
+	html = html.replace(/@type/g, data.type);
+	html = html.replace(/@settingLineItems/g, list);
+	html = html.replace(/@settingName/g, data.configName);
+	html = html.replace(/@settingConfig/g, data.config);
+	html = html.replace(/@settingCurrent/g, data.current);
+	// TOGGLE
+	if (data.type == "TOGGLE") {
+		settingOn  = "";
+		settingOff = "";
+		if (data.current == 0) {
+			settingOff = "selected";
+		} else {
+			settingOn = "selected";
+		}
+		html = html.replace(/@toggleSettingOff/g, settingOff);
+		html = html.replace(/@toggleSettingOn/g, settingOn);
+	}
+	$("#cameraSettingsPanel").html( html );
+
+	// Enable CSS
+	$("#cameraSettingsPanel").enhanceWithin();
+
+	// open panel
+	$("#cameraSettingsPanel").panel("open");
 }
 
 function displayCameraFiles (page) {
@@ -238,9 +363,9 @@ function displayCameraFiles (page) {
 				displayPagination(page);
 
 				// clear alert
-				enableAllCameraFunctions();
 				hideLoading();
 				clearPage2Alert();
+				enableAllCameraFunctions();
 			} else {	// error; clear the div container
 				$("#cameraThumbsContainer").html("No camera detected");
 			}
@@ -312,8 +437,7 @@ function takePicture(){
 			hideLoading()
 
 			if (data.success) {
-				// show successful message
-				setPage1Alert(data.message);
+				// success
 			} else {
 				setAlertOnPage("#alertContainer1", "danger", "Problem!", data.error);
 			}
@@ -325,6 +449,9 @@ function takePicture(){
 		}
 	});
 }
+
+
+
 function displayLoading(myText) {
         $.mobile.loading( 'show', {
                 text: myText,
@@ -339,8 +466,7 @@ function hideLoading() {
 
 function captureSettingChange ( setting, value ){
 	disableAllCameraFunctions();
-	displayLoading("Changinging camera setting...");
-
+	displayLoading("Changing camera setting...");
 
 	//console.log(setting);
 	//console.log(value);
@@ -355,7 +481,7 @@ function captureSettingChange ( setting, value ){
 			hideLoading()
 
 			if ( ! data.success) {
-				setAlertOnPage("#alertContainer1", "danger", "Problem!", data.error);
+				setAlertOnPage("#alertContainer3", "danger", "Problem!", data.error);
 			}
 			enableAllCameraFunctions();
 			hideLoading();

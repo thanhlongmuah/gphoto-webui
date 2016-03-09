@@ -1,5 +1,4 @@
 <?php
-require_once("CameraRaw.php");
 class gPhoto {
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -91,50 +90,48 @@ public function takePicture () {
 		//$cameraFile = $filearr[ count($filearr) - 1 ];	// get file name
 		$returnObj->file = $cameraFile;
 
-		//$returnObj->message = $output[0];
-		$returnObj->message = "Photo taken: " . $cameraFile;
-
 		// generate JPG preview image
 		//$raw = new CameraRaw();
-		$cameraFileFull = realpath ($cameraFile);
-		if (file_exists ($cameraFileFull)) {
-			if (CameraRaw::isRawFile($cameraFileFull)) {
-				// raw, so let's convert
-				$fileJPG        = $cameraFile . ".jpg";
-				$fileJPGFull    = realpath ($cameraFileFull) . ".jpg";
-$im = new Imagick($cameraFileFull);
-/*
-$im->setImageFormat('jpg');
-$im->setImageCompressionQuality($quality);
-$im->stripImage();
-$im->thumbnailImage($width, $height, true);
-$im->writeImage($targetFilePath);
-$im->clear();
-$im->destroy();
-*/
-				//CameraRaw::generateImage($cameraFileFull, $fileJPGFull, 1024, 768);
-			} else {
+/*		$cameraFileFull = realpath ($cameraFile);
+		if (file_exists ($cameraFileFull)) {	// confirm file exists
+$ext = "cr2";
+			if ( $ext == "jpg" || $ext == "jpeg" ) {	// check if it's already a jpg/jpeg
 				// already a jpg
 				$fileJPG = $cameraFile;
+			} else {
+				// raw, so let's convert
+				$fileJPG        = $cameraFile . ".jpg";
+				//  ufraw-batch --out-type=jpg --compression=60 --embedded-image --overwrite IMG_9376.CR2 --output=embedded.jpg
+				$cmd = "ufraw-batch --out-type=jpg --compression=60 --embedded-image --overwrite " . $cameraFileFull . " --output=" . $fileJPG;
+				exec ($cmd, $output, $rv);
+				// confirm if the JPG was created
+				if ($rv == 0) {
+					$returnObj->success = true;
+				}
+				else {
+					$returnObj->error = "Could not generate JPG thumbnail: " . $cmd;
+				}
 			}
-			$returnObj->fileJPG = $fileJPG;
+
 			$returnObj->success = true;
+			$returnObj->fileJPG = $fileJPG;
+			$returnObj->message = "Photo taken: " . $cameraFile;
 		} else {
 			$returnObj->error = "File does not exist";
 		}
+*/
+		$returnObj->success = true;
+		$returnObj->message = "Photo taken: " . $cameraFile;
 	}
 	else {
 		$returnObj->error = "Could not capture image. Check camera settings or focus: " . $output[0];
 	}
 
-	// change back to the home directory
-	chdir ($_SERVER['DOCUMENT_ROOT']);
-
 	return $returnObj;
 }
 
 
-public function getCamera () {
+public function getCameraName () {
 	$returnObj = new stdClass();
 	exec ("gphoto2 --auto-detect", $output);
 	//var_dump($output);	//debug
@@ -155,7 +152,14 @@ public function configList () {
 	$returnObj = new stdClass();
 	exec ("gphoto2 --list-config 2>&1", $output, $rv);
 	$returnObj->config = $output;
-	$returnObj->success = true;
+
+	if (preg_match('/Error/', $output[0])) {        // check for Error
+		$returnObj->error = trim(str_replace('*', '', $output[0]));
+		$returnObj->success = false;
+	} else {
+		$returnObj->success = true;
+	}
+
 
 	return $returnObj;
 }
@@ -174,20 +178,24 @@ public function configGet ($config) {
 			$returnObj->config = $config;
 			$parts = explode("/", $config);
 			$returnObj->configName = $parts[count($parts)-1];
-			foreach ($output as $line) {
-				if (preg_match("/^Label: /", $line)) {
-					$returnObj->label	= explode (' ', $line, 2)[1];
-					$returnObj->success = true;
-				} elseif (preg_match("/^Type: /", $line)) {
-					$returnObj->type	= explode (' ', $line, 2)[1];
-				} elseif (preg_match("/^Current: /", $line)) {
-					$returnObj->current	= explode (' ', $line, 2)[1];
-				} elseif (preg_match("/^Choice: /", $line)) {
-					$option = explode (' ', $line, 3);
-					array_push ($options, array("index" => $option[1], "value" => $option[2]));
+			if (count($output) > 1) {		// confirm the command has some values
+				foreach ($output as $line) {
+					if (preg_match("/^Label: /", $line)) {
+						$returnObj->label	= explode (' ', $line, 2)[1];
+						$returnObj->success = true;
+					} elseif (preg_match("/^Type: /", $line)) {
+						$returnObj->type	= explode (' ', $line, 2)[1];
+					} elseif (preg_match("/^Current: /", $line)) {
+						$returnObj->current	= explode (' ', $line, 2)[1];
+					} elseif (preg_match("/^Choice: /", $line)) {
+						$option = explode (' ', $line, 3);
+						array_push ($options, array("index" => $option[1], "value" => $option[2]));
+					}
 				}
+				$returnObj->cameraSettings = $options;
+			} else {
+				$returnObj->error = "Invalid camera setting";
 			}
-			$returnObj->cameraSettings = $options;
 		} else {
 			$returnObj->error = "Invalid character in command";
 		}

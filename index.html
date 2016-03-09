@@ -11,7 +11,7 @@
 	<meta name="author" content="">
 
 	<!-- CSS -->
-	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
 
 	<!-- jQuery -->
@@ -53,6 +53,7 @@
 			</div>
 		</div>
 		<!-- /#alert-message -->
+
 		<h1>Take Picture</h1>
 		<button onclick="takePicture()" id="snap">
 			<img src="img/aperture.png" class="img">
@@ -62,7 +63,7 @@
 		<h3>Capture Settings</h3>
 		<div class="container-fluid">
 			<!-- div class="ui-grid-solo" -->
-				<script type="text/html" id="settingsHTML">
+				<script type="text/html" id="captureSettingsHTML">
 					<fieldset class="ui-field-contain">
 					<label for="@settingName"> @labelName </label>
 						<select name="@settingName" id="@settingName" onchange="captureSettingChange('@settingConfig', this.value)">
@@ -70,12 +71,11 @@
 						</select>
 					</fieldset>
 				</script>
-				<script type="text/html" id="settingLineItemHTML">
+				<script type="text/html" id="captureSettingLineItemHTML">
 					<option value="@index" @selected> @value </option>
 				</script>
 				<form method="post" action="#save">
-					<div id="settingsContainer">Loading camera settings...</div>
-					<!-- input type="submit" data-inline="true" value="Submit" -->
+					<div id="captureSettingsContainer">Loading camera settings...</div>
 				</form>
 		</div>
 		<!-- End camera settings -->
@@ -85,7 +85,7 @@
 
 
 
-<!-- Page Content -->
+<!-- Page Two -->
 <div data-role="page" id="page-two">
 	<div data-role="header">
 		<h2 id="cameraName2"></h2>
@@ -99,15 +99,8 @@
 	</div>
 
 	<!-- Page Content -->
-	<!-- div data-role="main" class="container-fluid" -->
-	<div data-role="main" class="ui-content">
-		<div id="alertContainer2" class="row">
-			<div class="alert alert-info flash">
-				<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<strong>Info:</strong>
-				Loading camera photos...
-			</div>
-		</div>
+	<div data-role="main" class="ui-content" style="text-align:center">
+		<div id="alertContainer2" class="row"></div>
 		<script type="text/html" id="cameraThumbsHTML">
 			<div class="ui-block-b image-thumb">
 				<a href="@imageURL" target="_blank">
@@ -132,6 +125,122 @@
 		<ul class="row" id="paginationTop"></ul>
 		<ul id="cameraThumbsContainer" class="ui-grid-d ui-responsive"></ul>
 		<ul class="row" id="paginationBottom"></ul>
+	</div>
+</div>
+<!-- /#page-content-wrapper -->
+
+
+<!-- Page Three -->
+<div data-role="page" id="page-three">
+	<div data-role="header">
+		<h2 id="cameraName3"></h2>
+		<div data-role="navbar" data-iconpos="left">
+			<ul>
+				<li><a href="#page-one" data-icon="camera">Take Picture</a></li>
+				<li><a href="#page-two" data-icon="grid">View Photos</a></li>
+				<li><a href="#page-three" data-icon="gear" class="ui-btn-active ui-state-persist">Camera Settings</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/html" id="panelLiHTML">
+		<option value="@index" @selected> @value </option>
+	</script>
+	<!--  RADIO  -->
+	<script type="text/html" id="panelHTMLRADIO">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<label for="@settingName"> @labelName </label>
+		<div class="ui-field-contain">
+			<fieldset class="ui-field-contain">
+				<select name="@settingName" id="@settingName" onchange="captureSettingChange('@settingConfig', this.value)">
+					@settingLineItems
+				</select>
+			</fieldset>
+		</div>
+	</script>
+	<!--  OPTION  -->
+	<script type="text/html" id="panelHTMLOPTION">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<label for="@settingName"> @labelName </label>
+		<div class="ui-field-contain">
+			<fieldset class="ui-field-contain">
+				<select name="@settingName" id="@settingName" onchange="captureSettingChange('@settingConfig', this.value)">
+					@settingLineItems
+				</select>
+			</fieldset>
+		</div>
+	</script>
+	<!--  DATE  -->
+	<script type="text/html" id="panelHTMLDATE">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<label for="text-basic">@labelName:</label>
+		<div class="ui-field-contain">
+			<input type="date" data-inline="true" name="text-basic" id="@settingName" value="@settingCurrent">
+		</div><div class="ui-field-contain">
+			<input type="button" value="Save" class="ui-btn" data-icon="save" onclick="captureSettingChange('@settingConfig', $('#@settingName').val());">
+		</div>
+	</script>
+	<!--  TEXT  -->
+	<script type="text/html" id="panelHTMLTEXT">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<label for="text-basic">@labelName:</label>
+		<div class="ui-field-contain">
+			<input type="text" name="text-basic" id="@settingName" value="@settingCurrent">
+		</div><div class="ui-field-contain">
+			<input type="button" class="ui-btn" value="Save" data-icon="save" onclick="captureSettingChange('@settingConfig', $('#@settingName').val());">
+		</div>
+	</script>
+	<!--  TOGGLE  -->
+	<script type="text/html" id="panelHTMLTOGGLE">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<p>Current Option: "@settingCurrent"</p>
+		<label for="@settingName"> @labelName </label>
+		<div class="ui-field-contain">
+			<fieldset class="ui-field-contain">
+				<select name="@settingName" data-role="slider" id="@settingName" onchange="captureSettingChange('@settingConfig', this.val())">
+					<option value="0" @toggleSelectedOff>Off</value>
+					<option value="1" @toggleSelectedOn>On</value>
+				</select>
+			</fieldset>
+		</div>
+	</script>
+	<!--  NONE  -->
+	<script type="text/html" id="panelHTML">
+		<h2>@labelName</h2>
+		<p>@type</p>
+		<div class="ui-field-contain">
+			<label for="text-basic">@labelName:</label>
+			<input type="text" name="text-basic" id="@settingName" value="@settingCurrent" />
+		</div><div class="ui-field-contain">
+			<input type="button" value="Save" data-icon="save" onclick="captureSettingChange('@settingConfig', $('#@settingName').val());">
+		</div>
+	</script>
+
+	<div data-role="panel" class="ui-panel-inner" id="cameraSettingsPanel" data-position="right" data-position-fixed="true" data-dismissible="true" data-swipe-close="true" data-display="push">
+		<h2>Panel here</h2>
+	</div>
+	<!-- /panel -->
+
+	<!-- Page Content -->
+	<div data-role="main" class="ui-content" style="text-align:center">
+		<div id="alertContainer3" class="row"></div>
+		<h1>Camera Settings</h1>
+
+		<script type="text/html" id="cameraSettingHTML">
+			<li><a href="#" onclick="loadCameraSetting( '@setting' ); return false;">@text</a></li>
+		</script>
+
+		<div id="cameraSettingsDiv">
+		<form class="ui-filterable">
+			<input id="cameraSettingsFilter" data-type="search" placeholder="Find setting..." />
+		</form>
+		<ul id="cameraSettingsContainer" data-role="listview" data-filter="true" data-input="#cameraSettingsFilter" data-inset="true"></ul>
+		</div>
 	</div>
 </div>
 <!-- /#page-content-wrapper -->
