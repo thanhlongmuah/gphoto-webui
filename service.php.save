@@ -124,40 +124,35 @@ try {
 			echo json_encode ($returnObj);
 			break;
 
-		case "prepareDownloadORI":
+		case "downloadImageORI":
 			$fileID = $_GET['num'];
-			$dirLocal	= realpath("./images/") . "/";
-			$dirURL		= "/images/";
-			$returnObj = $gphoto->getFile($fileID, $dirLocal, $dirURL, false);
+			$returnObj = $gphoto->getFile($fileID);
+			$dir = "./tmp/";
 
-			header('Content-Type: application/json');
-			echo json_encode ($returnObj);
-			break;
-		case "prepareDownloadJPG":
-			$fileID = $_GET['num'];
-			$dirLocal	= realpath("./images/") . "/";
-			$dirURL		= "/images/";
-			$returnObj = $gphoto->getFile($fileID, $dirLocal, $dirURL, true);
-
-/*			if ($returnObj->success) {
-				$short_name = $returnObj->filename;
-				$fn = realpath ($dir . $returnObj->filename);
-				$jpg = $fn . ".jpg";
-				$short_jpg = $short_name . ".jpg";
-				// check if file already exists
-				if ( ! file_exists ($jpg) ) {
-					// convert to jpg via ufraw-batch
-					$cmd = "ufraw-batch --exposure=auto --compression=80 --out-path=" . $dirLocal . " --out-type=jpg --output=" . $jpg . " " . $fn . " 2>&1";
-					exec ($cmd, $output, $rv);
-				}
-
+			if ($returnObj->success) {
+				$fn = $returnObj->filename;
+				// extracting the extension:
+				$ext = substr($fn, strpos($fn,'.')+1);
+				// initiate file download
+				header ("Content-Type: application/octet-stream");
+				header ("Content-Type: application/" . $ext);
+				header ("Content-Disposition: attachment; filename=" . $fn);
+				header ("Expires: 0");
+				header ("Content-Length: " . filesize ($dir . $fn));
+				header ("Connection: close");
+				readfile ($dir . $fn);
 			}
-*/
-			header('Content-Type: application/json');
-			echo json_encode ($returnObj);
-			break;
+			else {
+				$fn = realpath($dir . $returnObj->filename);
+				$ext = substr($fn, strpos($fn,'.')+1);
+				$returnObj->ext = $ext;
+				$returnObj->fn = $fn;
 
-		case "downloadImageJPG-OLD":	// DELETE
+				header('Content-Type: application/json');
+				echo json_encode ($returnObj);
+			}
+			break;
+		case "downloadImageJPG":
 			$fileID = $_GET['num'];
 			$dir = "./tmp/";
 			chdir ($dir);
@@ -165,17 +160,13 @@ try {
 
 			if ($returnObj->success) {
 				$short_name = $returnObj->filename;
-				$fn = realpath ($dir . $returnObj->filename);
+				$fn = realpath ($returnObj->filename);
 				$jpg = $fn . ".jpg";
 				$short_jpg = $short_name . ".jpg";
-				// check if file already exists
-				if ( ! file_exists ($jpg) ) {
-					// convert to jpg via ufraw-batch
-					$cmd = "ufraw-batch --exposure=auto --compression=80 --out-path=" . $dir . " --out-type=jpg --output=" . $jpg . " " . $fn . " 2>&1";
-					exec ($cmd, $output, $rv);
-				}
-
-				if ($rv == 0) {		// successful conversion
+				// convert to jpg via ufraw-batch
+				$cmd = "ufraw-batch --exposure=auto --compression=80 --out-path=" . $dir . " --out-type=jpg --output=" . $jpg . " " . $fn . " 2>&1";
+				exec ($cmd, $output, $rv);
+				if ($rv != 0) {		// successful conversion
 					// extracting the extension:
 					//$ext = substr($jpg, strpos($jpg,'.')+1);
 					$ext = "jpg";

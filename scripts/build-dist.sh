@@ -10,7 +10,7 @@ mkdir $TMPDIR
 cp -rf $WEBUIDIR/*.php $WEBUIDIR/*.html $WEBUIDIR/js $WEBUIDIR/css $TMPDIR
 cp -rf $WEBUIDIR/bin $WEBUIDIR/img $WEBUIDIR/fonts $TMPDIR
 
-zip $ZIPNAME $TMPDIR
+zip -r $ZIPNAME $TMPDIR
 
 rm -rf $TMPDIR
 mv -f $ZIPNAME ../dist/.

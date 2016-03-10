@@ -350,9 +350,11 @@ function displayCameraFiles (page) {
 					$("#cameraThumbsContainer");
 					html = "";
 					if (thumb.extension == "JPG" || thumb.extension == "JPEG") {
-						html = $("#cameraThumbsHTMLJPG").text();
-					} else {
 						html = $("#cameraThumbsHTMLORI").text();
+					} else if (thumb.extension == "MOV" || thumb.extension == "MP4") {
+						html = $("#cameraThumbsHTMLORI").text();
+					} else {
+						html = $("#cameraThumbsHTMLJPG").text();
 					}
 					html = html.replace(/@thumbURL/g, thumbsDir + thumb.name);
 					html = html.replace(/@downloadURLJPG/g, "/service.php?action=downloadImageJPG&num=" + thumb.num);
@@ -360,6 +362,7 @@ function displayCameraFiles (page) {
 					html = html.replace(/@imageLabel/g, CAMERAFILES[thumb.num - 1].filename);
 					html = html.replace(/@imageAlt/g, CAMERAFILES[thumb.num - 1].filename);
 					html = html.replace(/@extension/g, thumb.extension);
+					html = html.replace(/@downloadFileNum/g, thumb.num);
 					$("#cameraThumbsContainer").append( html );
 				}
 				//console.log(items);
@@ -426,6 +429,43 @@ function displayPagination(page) {
 function lastPage() {
 	var last = Math.ceil(CAMERAFILES.length / PHOTOSPERPAGE);
 	return last;
+}
+function prepareDownload (fileNum, convertToJPG) {
+	console.log("Preparing to download file: " + fileNum);
+	displayLoading("Retrieving file from camera...");
+	disableAllCameraFunctions();
+
+	action = "prepareDownloadORI";
+	if (convertToJPG) {
+		action = "prepareDownloadJPG";
+		displayLoading("Retrieving and converting image to JPG... Could take some time...");
+	}
+
+	$.ajax({
+		url: "service.php?action=" + action + "&num=" + fileNum,
+		dataType : "json",
+		success: function(data){
+
+			console.log(data);
+			enableAllCameraFunctions();
+			hideLoading();
+
+			if (data.success) {
+				// success; initiate download
+				//console.log("INITIATE DOWNLOAD: " + data.filename);
+				window.open(data.filename, "_blank");
+			} else {
+				setAlertOnPage("#alertContainer2", "danger", "Problem!", data.error);
+			}
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+
+			hideLoading();
+		}
+	});
 }
 
 

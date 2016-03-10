@@ -102,20 +102,20 @@
 	<!-- Page Content -->
 	<div data-role="main" class="ui-content" style="text-align:center">
 		<div id="alertContainer2" class="row"></div>
-		<script type="text/html" id="cameraThumbsHTMLORI">
-			<div class="image-thumb">
-				<img src="@thumbURL" alt="@imageLabel" />
-				<div class="thumb-link-container">
-					<a href="@downloadURLJPG" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">JPG</a>
-					<a href="@downloadURLORI" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">@extension</a>
-				</div>
-			</div>
-		</script>
 		<script type="text/html" id="cameraThumbsHTMLJPG">
 			<div class="image-thumb">
 				<img src="@thumbURL" alt="@imageLabel" />
 				<div class="thumb-link-container">
-					<a href="@downloadURLORI" class="ui-btn ui-btn-inline ui-mini ui-btn-a" target="_blank">@extension</a>
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', true); return false;">JPG</a>
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="cameraThumbsHTMLORI">
+			<div class="image-thumb">
+				<img src="@thumbURL" alt="@imageLabel" />
+				<div class="thumb-link-container">
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
 				</div>
 			</div>
 		</script>

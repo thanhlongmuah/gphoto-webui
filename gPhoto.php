@@ -6,10 +6,10 @@ class gPhoto {
 // VARIABLES
 //
 
-	private $quiet;
+/*	private $quiet;
 	private $keep;
 	private $uilock;
-
+*/
 //
 //
 /////////////////////////////////////////////////////////////////////////////////
@@ -367,23 +367,29 @@ public function getListOfFiles () {
 }
 
 
-public function getFile ($fileID) {
+public function getFile ($fileID, $dirLocal, $dirURL, $convertToJPG = false) {
 
 	$returnObj->success = false;
 
 	// verify id
 	if (is_numeric ($fileID) ) {
+
+		$curDir = getcwd ();
 		// change directory to tmp first
-		//$rv = chdir ("./tmp/");
+		$rv = chdir ($dirLocal);
 		// confirm we are in the correct directory
-/*		if ( ! $rv) {
-			$returnObj->error = "Could not change to the tmp directory";
+		if ( ! $rv) {
+			$returnObj->error = "Could not change the directory: " . $dirLocal;
 			return $returnObj;
 		}
-*/
+
 		// get-file
 		$cmd = "gphoto2 --skip-existing --get-file=" . $fileID . " >$$.txt; cat $$.txt; rm -f $$.txt";
+		$returnObj->cmd = $cmd;
 		exec ($cmd, $output, $rv);
+		// change dir back
+		chdir ($curDir);
+
 		// output sample: "Saving file as IMG_8617.CR2"
 		$line = implode ("", $output);
 		$returnObj->output = $output;
@@ -392,18 +398,40 @@ public function getFile ($fileID) {
 			// success
 			// parse filename
 			$fn = explode(" ", $line)[3];
-			if (file_exists($fn)) {
-				// initiate file download
-/*				header("Content-Type: application/octet-stream");
-				header("Content-Disposition: attachment; filename=" . $_GET['fn']);
-				readfile($_GET['fn']);
-*/
-				$returnObj->filename = $fn;
-				$returnObj->success  = true;
+			if (file_exists($dirLocal . $fn)) {
+				if ($convertToJPG) {	// JPG
+					$jpgFile = $fn . ".jpg";
+					// before going through all the effort of downloading and converting the images, check if the files already exist
+					if ( file_exists ($dirLocal . $jpgFile) ) {
+						$returnObj->success  = true;
+						$returnObj->filename = $dirURL . $jpgFile;
+					} else {
+						// convert to jpg via ufraw-batch
+						$cmd = "ufraw-batch --exposure=auto --compression=80 --overwrite --out-path=" . $dirLocal . " --out-type=jpg --output=" . $jpgFile . " " . $dirLocal . $fn . " 2>&1";
+						exec ($cmd, $output, $rv);
+						$returnObj->cmdJPG = $cmd;
+
+						// move the image if it's in the home dir
+						if ( file_exists ($jpgFile) ) {
+							rename ($jpgFile, $dirLocal . $jpgFile);
+						}
+
+						$returnObj->outputJPG = $output;
+						if ($rv == 0) {		// success
+							$returnObj->success = true;
+							$returnObj->filename = $dirURL . $jpgFile;
+						} else {		// failed
+							$returnObj->error = "Error converting image to JPG: " . $output[0];
+						}
+					}
+				} else {	// keep original
+					$returnObj->filename = $dirURL . $fn;
+					$returnObj->success  = true;
+				}
 			}
 			else {
 				// failed
-				$returnObj->error = "File does not exist: " . $fn;
+				$returnObj->error = "File does not exist: " . $dirLocal . $fn;
 			}
 		} else {
 			// failed
@@ -413,67 +441,14 @@ public function getFile ($fileID) {
 	else {
 		$returnObj->error = "Not a number: '" . $fileID . "'";
 	}
-	// change back to the home directory
-	chdir ($_SERVER['DOCUMENT_ROOT']);
 	return $returnObj;
 }
 
 
-//
-//
-/////////////////////////////////////////////////////////////////////////////////
 
-}	// end of Class
-
-
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-// MAIN SWITCH
-//
-//$gphoto = new gPhoto();
-
-
-/*
-
-try {
-	switch($action){
-		case "takePicture":
-			gphoto->takePicture();
-			break;
-
-		case "getCamera":
-			gphoto->getCamera();
-			break;
-
-
-//[-a|--abilities]
-//[-L|--list-files]
-//[--list-config]
-//[--get-config=STRING]
-//[--storage-info]
-
-
-		case "configGet":
-			$config = trim ($_GET['config']);
-			if (isset ($config)) {
-				configGet ($config);
-			} else {
-				configList ();
-			}
-			break;
-
-		case "configSet":
-			//configSet ();
-			break;
-
-		default:
-			break;
-	}
-} catch (Exception $e) {
-	//echo $e;
-	var_dump($e);
+// end of Class
 }
-*/
-
+//
+//
+/////////////////////////////////////////////////////////////////////////////////
 ?>
