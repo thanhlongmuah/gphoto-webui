@@ -239,18 +239,37 @@
 	<!-- Page Content -->
 	<div data-role="main" class="ui-content" style="text-align:center">
 		<div id="alertContainer3" class="row"></div>
-		<h1>Camera Settings</h1>
 
+		<h1>Pi Settings</h1>
+		<div>
+			<div id="piSettingsContainer"></div>
+			<a href="#dialog-clearTempFiles" class="ui-btn">Clear File Cache on RPi</a>
+		</div>
+
+		<h1>Camera Settings</h1>
 		<script type="text/html" id="cameraSettingHTML">
 			<li><a href="#" onclick="loadCameraSetting( '@setting' ); return false;">@text</a></li>
 		</script>
 
 		<div id="cameraSettingsDiv">
-		<form class="ui-filterable">
-			<input id="cameraSettingsFilter" data-type="search" placeholder="Find setting..." />
-		</form>
-		<ul id="cameraSettingsContainer" data-role="listview" data-filter="true" data-input="#cameraSettingsFilter" data-inset="true"></ul>
+			<form class="ui-filterable">
+				<input id="cameraSettingsFilter" data-type="search" placeholder="Find setting..." />
+			</form>
+			<ul id="cameraSettingsContainer" data-role="listview" data-filter="true" data-input="#cameraSettingsFilter" data-inset="true"></ul>
 		</div>
+	</div>
+</div>
+<!-- /#page-content-wrapper -->
+
+
+<!-- Dialog to clear temp files -->
+<div data-role="page" data-dialog="true" id="dialog-clearTempFiles">
+	<div data-role="header">
+		<h2>Clear Temp Files?</h2>
+	</div>
+	<div data-role="main" class="ui-content">
+		<a href="#page-three" class="ui-btn" onclick="clearTempFiles();">Yes</a>
+		<a href="#page-three" class="ui-btn" onclick="">No</a>
 	</div>
 </div>
 <!-- /#page-content-wrapper -->

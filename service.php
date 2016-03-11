@@ -28,17 +28,27 @@ if (isset($_GET['action'])){
 try {
 	switch($action){
 		case "clearTempFiles":
-			// clear tmp directory
-			$dir = "tmp/";
 			$returnObj->success = false;
-			if (chdir($dir)) {
-				// clear files
-				array_map("unlink", glob('some/dir/*.txt'));	/**/
-				$returnObj->success = true;
-			}
-			else {
-				$returnObj->error = "Could not change directory: " . $dir;
-			}
+			// clear tmp directory
+			array_map("unlink", glob('./images/*'));	/* stop commenting remaining lines */
+			array_map("unlink", glob('./log/*.log'));	/* stop commenting remaining lines */
+			array_map("unlink", glob('./thumbs/*'));	/* stop commenting remaining lines */
+			$returnObj->success = true;
+			header('Content-Type: application/json');
+			echo json_encode($returnObj);
+			break;
+		case "getRPIStorage":
+			$dir = '/';
+			$free = disk_free_space($dir);
+			$total = disk_total_space($dir);
+			$returnObj->freeBytes = $free;
+			$returnObj->freeKB = $free / (1024);
+			$returnObj->freeMB = $free / (1024*1024);
+			$returnObj->freeGB = $free / (1024*1024*1024);
+			$returnObj->totalBytes = $total;
+			$returnObj->totalKB = $total / (1024);
+			$returnObj->totalMB = $total / (1024*1024);
+			$returnObj->totalGB = $total / (1024*1024*1024);
 			header('Content-Type: application/json');
 			echo json_encode($returnObj);
 			break;

@@ -56,7 +56,7 @@ window.setTimeout(function() {
 $(document).ready( initialPageLoad );
 //$(document).on( "pageshow","#page-one", loadTakePicture);
 $(document).on( "pageshow","#page-two", loadCameraFiles);
-//$(document).on( "pageshow","#page-three", load);
+$(document).on( "pageshow","#page-three", loadStorage);
 
 // load at the start
 function initialPageLoad() {
@@ -148,7 +148,7 @@ function loadCameraFiles(page) {
 	}
 	// new page, so let's load
 	else {
-		disableAllCameraFunctions();
+		//disableAllCameraFunctions();
 		displayLoading("Loading camera photos...");
 
 		//console.log("Loading camera files...");
@@ -530,10 +530,63 @@ function captureSettingChange ( setting, value ){
 			if ( ! data.success) {
 				setAlertOnPage("#alertContainer3", "danger", "Problem!", data.error);
 			}
-			enableAllCameraFunctions();
-			hideLoading();
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
+}
+
+function loadStorage() {
+	$.ajax({
+		url: "service.php?action=getRPIStorage",
+		url: "storage.php",
+		dataType : "json",
+		success: function(data){
+
+			//console.log(data);
+			enableAllCameraFunctions();
+			hideLoading();
+
+			var text = "There is " + data.freeMB.toFixed(1) + "MB free of " + data.totalMB.toFixed(2) + "MB total storage";
+			$("#piSettingsContainer").text( text );
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			enableAllCameraFunctions();
+			hideLoading();
+
+			console.log(xhr);
+			console.log(ajaxOptions);
+			console.log(thrownError);
+		}
+	});
+}
+
+function clearTempFiles() {
+	displayLoading("Deleting temporary files on the RPi...");
+	$.ajax({
+		url: "service.php?action=clearTempFiles",
+		dataType : "json",
+		success: function(data){
+
+			//console.log(data);
+			hideLoading();
+
+			if (data.success) {
+				setPage3Alert("Successfully cleared files from RPi");
+			} else {
+				setAlertOnPage("#alertContainer3", "danger", "Problem!", data.error);
+			}
+
+			// refresh storage line
+			loadStorage();
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			enableAllCameraFunctions();
+			hideLoading();
+
 			console.log(xhr);
 			console.log(ajaxOptions);
 			console.log(thrownError);
