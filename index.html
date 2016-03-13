@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<!-- Start of first page -->
+<!--  page-one  -->
 <div data-role="page" id="page-one">
 	<script type="text/html" id="alertHTML">
 		<div class='alert alert-@alertClass flash'>
@@ -86,7 +86,7 @@
 
 
 
-<!-- Page Two -->
+<!--  page-two  -->
 <div data-role="page" id="page-two">
 	<div data-role="header">
 		<h2 id="cameraName2"></h2>
@@ -108,6 +108,7 @@
 				<div class="thumb-link-container">
 					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', true); return false;">JPG</a>
 					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
+					<img src="css/images/icons-png/delete-black.png" class="ui-btn ui-mini" onclick="downloadFromCamera('@downloadFileNum'); return false;" />
 				</div>
 			</div>
 		</script>
@@ -116,6 +117,7 @@
 				<img src="@thumbURL" alt="@imageLabel" />
 				<div class="thumb-link-container">
 					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
+					<img src="css/images/icons-png/delete-black.png" class="ui-btn ui-mini" onclick="downloadFromCamera('@downloadFileNum'); return false;" />
 				</div>
 			</div>
 		</script>
@@ -140,7 +142,7 @@
 <!-- /#page-content-wrapper -->
 
 
-<!-- Page Three -->
+<!--  page-three  -->
 <div data-role="page" id="page-three">
 	<div data-role="header">
 		<h2 id="cameraName3"></h2>

@@ -280,18 +280,34 @@ function getCaptureSettings() {
 	$returnObj = new stdClass();
 	$gphoto = new gPhoto();
 
-	$iso		= $gphoto->getISO();
-	$aperture	= $gphoto->getAperture();
-	$shutter	= $gphoto->getShutterSpeed();
+	$iso			= $gphoto->getISO();
+	$aperture		= $gphoto->getAperture();
+	$shutter		= $gphoto->getShutterSpeed();
+	$imageFormat		= $gphoto->getImageFormat();
+	$whiteBalance		= $gphoto->getWhiteBalance();
+	$focusMode		= $gphoto->getFocusMode();
+	$autoExposureMode	= $gphoto->getAutoExposureMode();
+	$driveMode		= $gphoto->getDriveMode();
+	$pictureStyle		= $gphoto->getPictureStyle();
+	$meteringMode		= $gphoto->getMeteringMode();
+	$aeb			= $gphoto->getAEB();
 
 	$returnObj->settings = array ();		// need to set the array object first
 	$returnObj->success = false;
 
 	if ($iso->success) {
 		array_push($returnObj->settings,
+				$autoExposureMode,
 				$iso,
 				$aperture,
-				$shutter
+				$shutter,
+				$imageFormat,
+				$meteringMode,
+				$driveMode,
+				$whiteBalance,
+				$focusMode,
+				$pictureStyle,
+				$aeb
 		);
 		$returnObj->success = true;
 	}

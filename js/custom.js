@@ -54,9 +54,9 @@ window.setTimeout(function() {
 
 
 $(document).ready( initialPageLoad );
-//$(document).on( "pageshow","#page-one", loadTakePicture);
+$(document).on( "pageshow","#page-one", loadCaptureSettings);
 $(document).on( "pageshow","#page-two", loadCameraFiles);
-$(document).on( "pageshow","#page-three", loadStorage);
+$(document).on( "pageshow","#page-three", loadPageThree);
 
 // load at the start
 function initialPageLoad() {
@@ -64,6 +64,10 @@ function initialPageLoad() {
 	loadCameraName();
 	loadCaptureSettings();
 	//loadCameraFiles(1);
+	//loadAllCameraSettings();
+}
+function loadPageThree() {
+	loadStorage();
 	loadAllCameraSettings();
 }
 
@@ -96,7 +100,7 @@ function loadCameraName() {
 }
 
 function loadCaptureSettings() {
-	//setPage1Alert("Loading camera settings...");
+	displayLoading("Loading capture settings...");
 	$.ajax({
 		url: "service.php?action=getCaptureSettings",
 		dataType: "json",
@@ -109,7 +113,7 @@ function loadCaptureSettings() {
 }
 
 function loadAllCameraSettings() {
-	setPage3Alert("Loading all camera settings...");
+	displayLoading("Loading all camera settings...");
 	$.ajax({
 		url: "service.php?action=getAllCameraSettings",
 		dataType: "json",
@@ -224,6 +228,7 @@ function displayCaptureSettings(data){
 		$("#captureSettingsContainer").html("Could not retrieve camera settings.");
 	}
 
+	hideLoading();
 	// Enable CSS on the new DOM objects
 	$("#captureSettingsContainer").enhanceWithin();
 }
@@ -270,6 +275,7 @@ function loadCameraSetting ( setting ) {
 			console.log(xhr);
 			console.log(ajaxOptions);
 			console.log(thrownError);
+			hideLoading();
 		}
 	});
 }
@@ -542,7 +548,6 @@ function captureSettingChange ( setting, value ){
 function loadStorage() {
 	$.ajax({
 		url: "service.php?action=getRPIStorage",
-		url: "storage.php",
 		dataType : "json",
 		success: function(data){
 
@@ -592,4 +597,8 @@ function clearTempFiles() {
 			console.log(thrownError);
 		}
 	});
+}
+
+function downloadFromCamera( num ) {
+	console.log("Delete: " + num);
 }

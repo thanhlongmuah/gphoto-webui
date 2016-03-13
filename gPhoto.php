@@ -243,6 +243,31 @@ public function getAperture () {
 public function getShutterSpeed () {
 	return $this->configGet("/main/capturesettings/shutterspeed");
 }
+public function getImageFormat () {
+	return $this->configGet("/main/imgsettings/imageformat");
+}
+public function getWhiteBalance () {
+	return $this->configGet("/main/imgsettings/whitebalance");
+}
+public function getFocusMode () {
+	return $this->configGet("/main/capturesettings/focusmode");
+}
+public function getAutoExposureMode () {
+	return $this->configGet("/main/capturesettings/autoexposuremode");
+}
+public function getDriveMode () {
+	return $this->configGet("/main/capturesettings/drivemode");
+}
+public function getPictureStyle () {
+	return $this->configGet("/main/capturesettings/picturestyle");
+}
+public function getMeteringMode () {
+	return $this->configGet("/main/capturesettings/meteringmode");
+}
+public function getAEB () {
+	return $this->configGet("/main/capturesettings/aeb");
+}
+
 
 
 public function getCameraFiles ($pageNum, $countOnPage) {
