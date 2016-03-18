@@ -2,7 +2,7 @@
 var CAMERAFILES;
 var PHOTOSPERPAGE = 100;
 var CAMERAFILESPAGENUM;
-var ALLCAMERASETTINGS;
+var ALLCAMERASETTINGS = null;
 
 
 function setPage1Alert (msg) {
@@ -54,7 +54,7 @@ window.setTimeout(function() {
 
 
 $(document).ready( initialPageLoad );
-$(document).on( "pageshow","#page-one", loadCaptureSettings);
+//$(document).on( "pageshow","#page-one", loadCaptureSettings);
 $(document).on( "pageshow","#page-two", loadCameraFiles);
 $(document).on( "pageshow","#page-three", loadPageThree);
 
@@ -64,11 +64,13 @@ function initialPageLoad() {
 	loadCameraName();
 	loadCaptureSettings();
 	//loadCameraFiles(1);
-	//loadAllCameraSettings();
+	//loadPageThree();
 }
 function loadPageThree() {
-	loadStorage();
-	loadAllCameraSettings();
+	if (ALLCAMERASETTINGS == null) {
+		loadStorage();
+		loadAllCameraSettings();
+	}
 }
 
 function disableAllCameraFunctions() {
