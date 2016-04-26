@@ -44,6 +44,15 @@ cd gphoto-webui/bin; ./gphoto-webui.sh
 
 5) Point your browser to http://x.x.x.x:8000/  (x.x.x.x is the IP if your Raspberry Pi)
 
+
+To make it launch on startup:
+```
+sudo ln -s /home/pi/gphoto-webui/bin/gphoto-webui.sh /etc/init.d/gphoto-webui.sh
+sudo ln -s /etc/init.d/gphoto-webui.sh /etc/rc3.d/S999gphoto-webui
+sudo ln -s /etc/init.d/gphoto-webui.sh /etc/rc5.d/S999gphoto-webui
+```
+
+
 Enjoy!
 
 

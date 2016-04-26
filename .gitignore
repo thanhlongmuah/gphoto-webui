@@ -3,6 +3,7 @@ thumbs/i*
 thumbs/t*
 thumbs/T*
 log/*.log
+log/pid
 tmp/*.CR2
 tmp/*.cr2
 tmp/*.JPG

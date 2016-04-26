@@ -6,17 +6,17 @@ PORT=8000
 # functions
 do_start () {
 	cd $WEBUIDIR
-	/usr/bin/php5 -S 0.0.0.0:$PORT >./log/out.log 2>./log/err.log &
-	echo $! > ./log/pid
+	/usr/bin/php5 -S 0.0.0.0:$PORT >$WEBUIDIR/log/out.log 2>$WEBUIDIR/log/err.log &
+	echo $! > $WEBUIDIR/log/pid
 	echo PID:
-	cat ./log/pid
+	cat $WEBUIDIR/log/pid
 }
 
 do_stop() {
 	cd $WEBUIDIR
 	PID=`cat $WEBUIDIR/log/pid`
 	kill $PID
-	rm -f ./log/pid
+	rm -f $WEBUIDIR/log/pid
 }
 
 
