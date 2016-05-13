@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WEBUIDIR=/home/pi/gphoto-webui
+WEBUIDIR=/home/osmc/projects/gphoto-webui
 PORT=8000
 
 # functions

@@ -40,6 +40,28 @@ if (isset($_GET['action'])){
 
 //}
 
+public function takePictureAndDownload () {
+	$returnObj->success = false;
+	// capture the image and download it to the Pi right away
+	exec ("gphoto2 --capture-image-and-download --filename \"./images/capture-%Y%m%d-%H%M%S-%03n.%C\" 2>&1", $out, $rv);
+	foreach ($output as $line) {
+		$line = " " . $line;	// add a space at the beginning so strpos can search correctly
+		if (strpos($line, 'Saving') !== false) {
+			// string found
+			$returnObj->filename = trim(explode("as", $line)[1]);
+			$returnObj->message = "Photo successfully taken and stored: '" . $returnObj->filename . "'";
+			$returnObj->returnStatus = true;
+			break;
+		}
+	}
+	if (strlen($returnObj->filename) == 0) {
+		$returnObj->message = trim(implode("\n", $out));
+		$returnObj->error = trim(implode("\n", $out));
+		$returnObj->success = false;
+	}
+	return $returnObj;
+}
+
 
 public function takePicture () {
 /*

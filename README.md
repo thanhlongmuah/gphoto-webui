@@ -31,9 +31,7 @@ https://github.com/gonzalo/gphoto2-updater
 3) Download the gphoto-webui from from github. I suggest your home folder, as it will extract a gphoto-webui folder.
 
 ```
-cd ~
-wget http://github.com/joelpereira/gphoto-webui/dist/gphoto-webui.zip
-unzip webui.zip
+wget http://github.com/joelpereira/gphoto-webui/dist/gphoto-webui.zip; unzip gphoto-webui.zip
 ```
 
 4) Start the php server. This will bind the server to port 8000 on all IP’s.
@@ -41,6 +39,9 @@ unzip webui.zip
 ```
 cd gphoto-webui/bin; ./gphoto-webui.sh
 ```
+
+
+TO CONFIRM...
 
 5) Point your browser to http://x.x.x.x:8000/  (x.x.x.x is the IP if your Raspberry Pi)
 

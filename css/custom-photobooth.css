@@ -1,0 +1,41 @@
+
+#divCountdown {
+	height:			95vh;
+	font-size:		10em;
+	text-align:		center;
+}
+
+@media screen and (min-height : 320px) {
+#divCountdown {
+	font-size:		20em;
+}}
+@media screen and (min-height : 600px)
+{
+#divCountdown
+  {
+    font-size:			30em;
+  }
+}
+
+
+.thumb-container {
+	margin:			0px;
+	padding:		0px;
+}
+.image-thumb {
+	display:		inline-block;
+	border-radius:		3px;
+	border:			1px solid #000000;
+	padding:		2px;
+	margin:			3px;
+	background-color:	#FFFFFF;
+}
+.thumb-link-container {
+	clear: both;
+}
+.thumb-link-image {
+	width:			30px;
+	height:			30px;
+	padding:		0px;
+	margin:			3px;
+}

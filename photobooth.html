@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>PhotoBooth</title>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" type="text/css" />
+	<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+	<link rel="stylesheet" href="css/custom-photobooth.css" type="text/css" />
+
+	<!-- jQuery -->
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/jquery.mobile-1.4.5.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/custom-photobooth.js"></script>
+
+</head>
+<body>
+
+<!--  page-one  -->
+<div data-role="page" id="page-one">
+	<script type="text/html" id="alertHTML">
+		<div class='alert alert-@alertClass flash'>
+			<a href='@link' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+			<strong> @alertType </strong>
+			@message
+		</div>
+	</script>
+
+	<div data-role="header">
+		<div data-role="navbar" data-iconpos="left">
+			<ul>
+				<li><a href="#page-one" data-icon="camera" class="ui-btn-active ui-state-persist">PhotoBooth</a></li>
+				<li><a href="#page-two" data-icon="grid">View Photos</a></li>
+			</ul>
+		</div>
+	</div>
+	<!-- Page Content -->
+	<div data-role="main" class="ui-content" style="text-align:center">
+
+		<div id="alertContainer1"></div>
+		<!-- /#alert-message -->
+
+		<h1>Start PhotoBooth</h1>
+		<button onclick="startPhotobooth(); return false;" id="snap">
+			<img src="img/aperture.png" class="img">
+		</button>
+	</div>
+</div>
+<!-- /#page-take-picture -->
+
+
+<div data-role="page" id="page-three">
+	<div data-role="main" id="divCountdown"></div>
+	<div data-role="footer">
+		
+	</div>
+</div>
+<!-- /#page-content-wrapper -->
+
+
+
+
+<!--  page-two  -->
+<div data-role="page" id="page-two">
+	<div data-role="header">
+		<h2 id="cameraName2"></h2>
+		<div data-role="navbar" data-iconpos="left">
+			<ul>
+				<li><a href="#page-one" data-icon="camera">PhotoBooth</a></li>
+				<li><a href="#page-two" data-icon="grid" class="ui-btn-active ui-state-persist">View Photos</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Page Content -->
+	<div data-role="main" class="ui-content" style="text-align:center">
+		<div id="alertContainer2" class="row"></div>
+		<script type="text/html" id="cameraThumbsHTMLJPG">
+			<div class="image-thumb">
+				<img src="@thumbURL" alt="@imageLabel" />
+				<div class="thumb-link-container">
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', true); return false;">JPG</a>
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
+					<img src="css/images/icons-png/delete-black.png" class="ui-btn ui-mini" onclick="downloadFromCamera('@downloadFileNum'); return false;" />
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="cameraThumbsHTMLORI">
+			<div class="image-thumb">
+				<img src="@thumbURL" alt="@imageLabel" />
+				<div class="thumb-link-container">
+					<a class="ui-btn ui-btn-inline ui-mini ui-btn-a" onclick="prepareDownload('@downloadFileNum', false); return false;">@extension</a>
+					<img src="css/images/icons-png/delete-black.png" class="ui-btn ui-mini" onclick="downloadFromCamera('@downloadFileNum'); return false;" />
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="paginationItemHTML">
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadCameraFiles(@pageNum);">@text</li>
+		</script>
+		<script type="text/html" id="paginationItemDisabledHTML">
+			<li class="ui-btn ui-mini ui-btn-inline ui-state-disabled" onclick="loadCameraFiles(@pageNum);">@text</li>
+		</script>
+		<script type="text/html" id="paginationPrevHTML">
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadPrevCameraFiles();">Prev</li>
+		</script>
+		<script type="text/html" id="paginationNextHTML">
+			<li class="ui-btn ui-mini ui-btn-inline" onclick="loadNextCameraFiles();">Next</li>
+		</script>
+
+		<ul class="row" id="paginationTop"></ul>
+		<ul id="cameraThumbsContainer" class="thumb-container"></ul>
+		<ul class="row" id="paginationBottom"></ul>
+	</div>
+</div>
+<!-- /#page-content-wrapper -->
+
+
+
+<!-- Dialog to show photos -->
+<div data-role="page" data-dialog="true" id="dialogPhotos">
+	<div data-role="header">
+		<h2>Countdown</h2>
+	</div>
+	<div data-role="main" class="ui-content">
+
+	</div>
+</div>
+<!-- /#page-content-wrapper -->
+</body>
+</html>
