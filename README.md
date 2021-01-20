@@ -16,6 +16,8 @@ Features (currently being implemented):
 
 1) Install the following packages.
 
+Install php7.1: http://www.heidislab.com/tutorials/installing-php-7-1-on-raspbian-stretch-raspberry-pi-zero-w
+
 ```
 sudo apt-get install php5 php5-cli php5-json zip unzip exiv2 ufraw
 ```
@@ -31,7 +33,8 @@ https://github.com/gonzalo/gphoto2-updater
 3) Download the gphoto-webui from from github. I suggest your home folder, as it will extract a gphoto-webui folder.
 
 ```
-wget http://github.com/joelpereira/gphoto-webui/dist/gphoto-webui.zip; unzip gphoto-webui.zip
+cd ~
+git clone https://github.com/thanhlongmuah/gphoto-webui
 ```
 
 4) Start the php server. This will bind the server to port 8000 on all IP’s.
