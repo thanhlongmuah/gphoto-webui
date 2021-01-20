@@ -1,12 +1,12 @@
 #!/bin/sh
 
-WEBUIDIR=/home/osmc/projects/gphoto-webui
+WEBUIDIR=~/gphoto-webui
 PORT=8000
 
 # functions
 do_start () {
 	cd $WEBUIDIR
-	/usr/bin/php5 -S 0.0.0.0:$PORT >$WEBUIDIR/log/out.log 2>$WEBUIDIR/log/err.log &
+	/usr/bin/php -S 0.0.0.0:$PORT >$WEBUIDIR/log/out.log 2>$WEBUIDIR/log/err.log &
 	echo $! > $WEBUIDIR/log/pid
 	echo PID:
 	cat $WEBUIDIR/log/pid
